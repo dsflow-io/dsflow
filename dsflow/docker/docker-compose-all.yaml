@@ -1,0 +1,60 @@
+version: '3'
+services:
+  pyspark:
+    build: .
+    image: dsflow/spark:all-in-one
+    hostname: spark-master
+    environment:
+      SPARK_CONF_DIR: /home/jovyan/.spark-conf
+      JUPYTER_CONFIG_DIR: /home/jovyan/.jupyter
+      JUPYTER_DATA_DIR: /home/jovyan/.local/share/jupyter
+    ports:
+      - 4040:4040
+      - 8998:8998
+      - 8888:8888
+    expose:
+      - 8998
+    volumes:
+      - $DSFLOW_WORKSPACE/datastore:/data
+      - $DSFLOW_WORKSPACE/workflows:/home/jovyan/workflows
+      - $DSFLOW_WORKSPACE/jobs:/home/jovyan/jobs
+      - $DSFLOW_WORKSPACE/adhoc:/home/jovyan/adhoc
+      - $DSFLOW_WORKSPACE/datastore:/home/jovyan/datastore
+      - $DSFLOW_WORKSPACE/dsflow/config/ipython-conf:/home/jovyan/.ipython
+      - $DSFLOW_WORKSPACE/dsflow/config/jupyter-conf:/home/jovyan/.jupyter
+      - $DSFLOW_WORKSPACE/dsflow/config/spark-conf:/home/jovyan/.spark-conf
+      - $DSFLOW_WORKSPACE/tmp/jupyter:/home/jovyan/.local/share/jupyter
+      - $DSFLOW_WORKSPACE/tmp/spark:/home/jovyan/.spark
+      - $DSFLOW_ROOT/dsflow/py-dsflow:/python-packages/dsflow
+  db:
+    image: postgres
+    hostname: db
+    environment:
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: example
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - $DSFLOW_WORKSPACE/tmp/pgdata:/var/lib/postgresql/data/pgdata
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+
+  # airflow:  # https://github.com/puckel/docker-airflow
+  #     image: puckel/docker-airflow:1.8.2
+  #     restart: always
+  #     depends_on:
+  #         - db
+  #     environment:
+  #         LOAD_EX: n
+  #         EXECUTOR: Local
+  #         POSTGRES_HOST: db
+  #         POSTGRES_USER: hive
+  #         POSTGRES_PASSWORD: example
+  #         POSTGRES_DB: airflow
+  #     volumes:
+  #         - $DSFLOW_WORKSPACE/tmp/airflow/dags:/usr/local/airflow/dags
+  #     ports:
+  #         - "8081:8080"
+  #     command: webserver
