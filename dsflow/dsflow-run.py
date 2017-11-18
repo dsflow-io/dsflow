@@ -12,24 +12,25 @@ datastore_abs_path = os.path.join(pwd, "datastore")
 jobs_abs_path = os.path.join(pwd, "jobs")
 docker_image_id = "jupyter/pyspark-notebook"
 
+my_env = os.environ.copy()
+my_env["DSFLOW_WORKSPACE"] = pwd
+
+docker_compose_file = "dsflow/docker/base/docker-compose.yaml"
+
 print("job_name :", job_name)
 print("input_parameter :", input_parameter)
 
 args = [
-    "docker",
+    "docker-compose",
+    "-f", docker_compose_file,
     "run",
-    "-i",
-    "--volume=%s:/tmp:rw" % tmp_abs_path,
-    "--volume=%s:/data:rw" % datastore_abs_path,
-    "--volume=%s:/jobs:ro" % jobs_abs_path,
-    "--workdir=/tmp",
-    # "--read-only=true",
-    # "--user=502:20",
-    # "--rm",
-    # "--env=TMPDIR=/tmp",
-    # "--env=HOME=/tmp",
-    "--env=INPUT_PARAMETER=%s" % input_parameter,
-    docker_image_id,
+    # "-i",
+    # "--network=dsflow",
+    # "--volume=%s:/tmp:rw" % tmp_abs_path,
+    "-v", "%s:/data:rw" % datastore_abs_path,
+    "-v", "%s:/jobs:ro" % jobs_abs_path,
+    "-e", "INPUT_PARAMETER=%s" % input_parameter,
+    "pyspark",
     "jupyter",
     "nbconvert",
     "--to=html",
@@ -44,4 +45,4 @@ args = [
 
 print(" ".join(args))
 
-subprocess.call(args)
+subprocess.call(args, env=my_env)

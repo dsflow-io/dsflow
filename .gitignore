@@ -108,3 +108,4 @@ notebook-templates/
 
 jobs/
 workflows/
+airflow/

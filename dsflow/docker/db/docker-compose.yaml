@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  db:
+    image: postgres
+    networks:
+      - dsflow
+    hostname: db
+    environment:
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: example
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - $DSFLOW_WORKSPACE/tmp/pgdata:/var/lib/postgresql/data/pgdata
