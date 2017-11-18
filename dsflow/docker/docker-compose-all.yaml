@@ -25,7 +25,7 @@ services:
       - $DSFLOW_WORKSPACE/dsflow/config/spark-conf:/home/jovyan/.spark-conf
       - $DSFLOW_WORKSPACE/tmp/jupyter:/home/jovyan/.local/share/jupyter
       - $DSFLOW_WORKSPACE/tmp/spark:/home/jovyan/.spark
-      - $DSFLOW_ROOT/dsflow/py-dsflow:/python-packages/dsflow
+      - $DSFLOW_WORKSPACE/dsflow/dsflow-core-lib:/python-packages/dsflow
   db:
     image: postgres
     hostname: db

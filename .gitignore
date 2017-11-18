@@ -105,3 +105,6 @@ notebooks/
 *.DS_Store
 tmp/
 notebook-templates/
+
+jobs/
+workflows/

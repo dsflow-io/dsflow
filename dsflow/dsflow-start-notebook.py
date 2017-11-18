@@ -2,13 +2,6 @@ import sys
 import os
 import subprocess
 
-# Example:
-"""
-DOC:
-
-python dsflow/dsflow-run.py jobs/table-people/create.ipynb ds=2017-11-09
-
-"""
 
 pwd = os.environ["PWD"]
 tmp_abs_path = os.path.join(pwd, "tmp")
