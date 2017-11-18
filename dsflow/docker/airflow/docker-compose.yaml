@@ -1,0 +1,25 @@
+version: '3.3'
+services:
+  airflow:  # https://github.com/puckel/docker-airflow
+    networks:
+      - dsflow
+    image: puckel/docker-airflow:1.8.2
+    # restart_policy:
+    #   condition: on-failure
+    #   delay: 5s
+    #   max_attempts: 3
+    #   window: 120s
+    depends_on:
+      - db
+    environment:
+      LOAD_EX: n
+      EXECUTOR: Local
+      POSTGRES_HOST: db
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: airflow
+    volumes:
+      - $DSFLOW_WORKSPACE/airflow/:/usr/local/airflow/
+    ports:
+      - "8081:8080"
+    command: webserver

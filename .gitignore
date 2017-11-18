@@ -100,12 +100,10 @@ ENV/
 # mypy
 .mypy_cache/
 
-datastore/
-notebooks/
-*.DS_Store
-tmp/
-notebook-templates/
-
-jobs/
-workflows/
-airflow/
+.DS_Store
+/datastore/
+/notebooks/
+/tmp/
+/jobs/
+/workflows/
+/airflow/
