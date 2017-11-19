@@ -1,10 +1,12 @@
 version: '3.3'
 services:
   pyspark:
-    build: .
     networks:
       - dsflow
-    image: dsflow/spark:all-in-one
+    build:
+      context: ..
+      dockerfile: ./base/Dockerfile
+    image: dsflow/base
     hostname: spark-master
     environment:
       SPARK_CONF_DIR: /home/jovyan/.spark-conf

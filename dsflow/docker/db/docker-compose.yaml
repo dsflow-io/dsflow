@@ -1,7 +1,12 @@
 version: '3.3'
 services:
   db:
-    image: postgres
+    networks:
+      - dsflow
+    build:
+      context: ..
+      dockerfile: ./db/Dockerfile
+    image: dsflow/db
     networks:
       - dsflow
     hostname: db

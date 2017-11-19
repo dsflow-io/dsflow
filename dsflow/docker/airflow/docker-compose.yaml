@@ -1,9 +1,10 @@
 version: '3.3'
 services:
   airflow:  # https://github.com/puckel/docker-airflow
-    networks:
-      - dsflow
-    image: puckel/docker-airflow:1.8.2
+    build:
+      context: ..
+      dockerfile: ./airflow/Dockerfile
+    image: dsflow/airflow
     # restart_policy:
     #   condition: on-failure
     #   delay: 5s
