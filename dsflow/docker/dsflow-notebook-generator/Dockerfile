@@ -21,7 +21,7 @@ RUN pip install configparser && \
     pip install click-spinner && \
     pip install envparse==0.2.0
 
-ADD dsflow_core_lib/dsflow /usr/src/app/dsflow
+ADD dsflow_core /usr/src/app/dsflow_core
 ADD templates /usr/src/app/templates
 
 # RUN pip install -e /usr/src/app/dsflow
