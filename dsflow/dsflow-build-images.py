@@ -2,8 +2,6 @@ import sys
 import os
 import subprocess
 
-import dsflow_core_lib
-
 pwd = os.environ["PWD"]
 
 # TODO: automatically find all images in dsflow/docker/
