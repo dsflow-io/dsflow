@@ -1,0 +1,23 @@
+version: '3.3'
+services:
+  dash:  # https://github.com/puckel/docker-airflow
+    networks:
+      - dsflow
+    build:
+      context: ..
+      dockerfile: ./dash/Dockerfile
+    image: dsflow/dash
+    # restart_policy:
+    #   condition: on-failure
+    #   delay: 5s
+    #   max_attempts: 3
+    #   window: 120s
+    volumes:
+      - $DSFLOW_WORKSPACE/workflows:/home/dash/workflows
+      - $DSFLOW_WORKSPACE/jobs:/home/dash/jobs
+      - $DSFLOW_WORKSPACE/adhoc:/home/dash/adhoc
+      - $DSFLOW_WORKSPACE/datastore:/home/dash/datastore
+      - $DSFLOW_WORKSPACE/datastore:/data
+    ports:
+      - 8050:8050
+    command: /bin/bash

@@ -1,14 +1,17 @@
-FROM python:3-alpine
+FROM python:3.6-slim
 
-RUN pip install dash==0.17.7 && \
-  pip install dash-renderer==0.7.4 && \
-  pip install dash-html-components==0.7.0 && \
-  pip install dash-core-components==0.12.0 && \
-  pip install plotly==2.0.13  # Plotly graphing
+RUN pip install numpy scipy pandas matplotlib pyarrow
+
+# https://plot.ly/dash/installation
+RUN pip install dash==0.19.0  # The core dash backend
+RUN pip install dash-renderer==0.11.1  # The dash front-end
+RUN pip install dash-html-components==0.8.0  # HTML components
+RUN pip install dash-core-components==0.14.0  # Supercharged components
+RUN pip install plotly --upgrade  # Plotly graphing library used in examples
 
 WORKDIR /home/dash/
 
 COPY ./dash .
-EXPOSE 8050
+# EXPOSE 8050
 
 CMD ["python", "app.py"]

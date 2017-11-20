@@ -33,5 +33,6 @@ subprocess.call(args + ["config"], env=my_env)
 print(" ".join(args))
 
 # subprocess.call(args + ["build"], env=my_env)
+# subprocess.call(args + ["up", "-d"], env=my_env)
 
-subprocess.call(args + ["run", "dash", "/bin/sh"], env=my_env)
+subprocess.call(args + ["run", "--service-ports", "dash"], env=my_env)
