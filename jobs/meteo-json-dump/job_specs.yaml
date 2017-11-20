@@ -1,0 +1,12 @@
+version: '0.1'
+description: Convert raw_meteo_bretagne into parquet
+class: CommandLineTool
+script: dump_csv_file.sh
+
+job_parameters:
+  - ds
+
+task_specs:
+  source_path: "https://public.opendatasoft.com/explore/dataset/donnees-synop-essentielles-omm/download/?format=json&q=&refine.date=2017&refine.nom=PLOUMANAC%27H&timezone=Europe/Berlin"
+  sink_path: "/data/raw/meteo/ds={{ ds }}"
+  ds: "{{ ds }}"

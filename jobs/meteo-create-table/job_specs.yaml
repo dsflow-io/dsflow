@@ -1,0 +1,16 @@
+version: '0.1'
+description: Convert raw_meteo_bretagne into parquet
+class: JupyterNotebook
+image: dsflow/pyspark:2.2  # not implemented
+script: create_table.ipynb
+
+job_parameters:
+  - ds
+
+task_specs:
+  source_path: "/data/raw/meteo/ds={{ ds }}"
+  sink_path: "/data/tables/meteo/ds={{ ds }}"
+  ds: "{{ ds }}"
+
+dependencies:
+  - meteo-csv-dump
