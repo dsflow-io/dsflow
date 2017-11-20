@@ -8,9 +8,10 @@ import pandas as pd
 import yaml
 from jinja2 import Template
 from textwrap import dedent
+import subprocess
 
-from dsflow.utils import get_datastore_path, get_flows_path
-from dsflow.models import *
+from .utils import get_datastore_path, get_flows_path
+from .models import *
 
 
 def display_html_h4(value):
@@ -26,7 +27,7 @@ class DsflowContext:
     def create(self):
         self.spark = SparkSession.builder.enableHiveSupport().getOrCreate()
 
-        return (self, self.spark)
+        return self
 
     @classmethod
     def execute_sql(self, query):
@@ -100,6 +101,15 @@ class DsflowContext:
                 print("")
 
         return(raw_contents)
+
+    @classmethod
+    def validade_task_specs(self, task_specs):
+        return "not implemented"
+
+    @classmethod
+    def validade_task_output(self, task_specs):
+        return "not implemented"
+
 
     @classmethod
     def get_flow(self, flow_name):

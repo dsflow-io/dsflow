@@ -17,7 +17,7 @@ import textwrap
 import glob
 import logging
 
-from dsflow import DSFLOW_ROOT
+from . import DSFLOW_ROOT
 
 
 LIVY_HOST = 'http://localhost:8998'

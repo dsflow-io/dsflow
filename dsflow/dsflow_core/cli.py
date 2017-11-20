@@ -21,9 +21,9 @@ import docker
 import click_spinner
 from envparse import env
 
-from dsflow import DSFLOW_ROOT
-from dsflow.utils import *
-from dsflow.models import *
+from . import DSFLOW_ROOT
+from .utils import *
+from .models import *
 
 print("""
 _________      _________ ___    v0.3 alpha

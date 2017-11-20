@@ -7,7 +7,7 @@ from textwrap import dedent
 import datetime as dt
 from jinja2 import Template
 
-from dsflow.utils import get_datastore_path, get_flows_path
+from .utils import get_datastore_path, get_flows_path
 
 
 class Flow:
