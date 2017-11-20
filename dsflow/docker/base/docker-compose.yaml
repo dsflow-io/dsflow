@@ -29,7 +29,7 @@ services:
       - $DSFLOW_WORKSPACE/dsflow/config/spark-conf:/home/jovyan/.spark-conf
       - $DSFLOW_WORKSPACE/tmp/jupyter:/home/jovyan/.local/share/jupyter
       - $DSFLOW_WORKSPACE/tmp/spark:/home/jovyan/.spark
-      - $DSFLOW_WORKSPACE/dsflow/dsflow-core-lib:/python-packages/dsflow
+      - $DSFLOW_WORKSPACE/dsflow/dsflow_core_lib:/python-packages/dsflow
 
 
 networks:

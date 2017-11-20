@@ -2,9 +2,11 @@ import sys
 import os
 import subprocess
 
+import dsflow_core_lib
 
 pwd = os.environ["PWD"]
 
+# TODO: automatically find all images in dsflow/docker/
 docker_compose_base_file = "dsflow/docker/base/docker-compose.yaml"
 docker_compose_dash = "dsflow/docker/dash/docker-compose.yaml"
 docker_compose_db = "dsflow/docker/db/docker-compose.yaml"
@@ -23,11 +25,6 @@ args = ["docker-compose",
 
 # preview
 subprocess.call(args + ["config"], env=my_env)
-
-# "--volume=%s:/tmp:rw" % tmp_abs_path,
-# "--volume=%s:/data:rw" % datastore_abs_path,
-# "--volume=%s:/jobs:ro" % jobs_abs_path,
-
 
 print(" ".join(args))
 
