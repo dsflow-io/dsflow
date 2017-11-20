@@ -1,0 +1,19 @@
+version: '3.3'
+services:
+  assistant:
+    build:
+      context: ../..
+      dockerfile: ./docker/assistant/Dockerfile
+    image: dsflow/assistant
+    # environment:
+    #   LOAD_EX: n
+    # volumes:
+    #   - $DSFLOW_WORKSPACE/airflow/:/usr/local/airflow/
+    ports:
+      - "8082:8080"
+    # command: /bin/bash
+    volumes:
+      - $DSFLOW_WORKSPACE/workflows:/workflows
+      - $DSFLOW_WORKSPACE/jobs:/jobs
+      - $DSFLOW_WORKSPACE/adhoc:/adhoc
+      - $DSFLOW_WORKSPACE/datastore:/data
