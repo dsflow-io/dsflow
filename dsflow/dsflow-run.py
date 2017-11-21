@@ -4,13 +4,19 @@ import subprocess
 import yaml
 import json
 
+from dsflow_core.cli_utils import validate_env
+
+validate_env()
+
+DSFLOW_ROOT = os.environ["DSFLOW_ROOT"]
+DSFLOW_WORKSPACE = os.environ["DSFLOW_WORKSPACE"]
+
 job_name = sys.argv[1]
 input_parameters = sys.argv[2:]
 
-pwd = os.environ["PWD"]
-tmp_abs_path = os.path.join(pwd, "tmp")
-datastore_abs_path = os.path.join(pwd, "datastore")
-jobs_abs_path = os.path.join(pwd, "jobs")
+tmp_abs_path = os.path.join(DSFLOW_WORKSPACE, "tmp")
+datastore_abs_path = os.path.join(DSFLOW_WORKSPACE, "datastore")
+jobs_abs_path = os.path.join(DSFLOW_WORKSPACE, "jobs")
 
 print("job_name :", job_name)
 print("input_parameters :", input_parameters)
@@ -34,7 +40,6 @@ print(job_specs)
 script_container_path = os.path.join("/jobs", job_name, job_specs["script"])
 
 my_env = os.environ.copy()
-my_env["DSFLOW_WORKSPACE"] = pwd
 
 if job_specs["class"] == "JupyterNotebook":
     image_id = "base"  # FIXME

@@ -1,10 +1,13 @@
 version: '3.3'
 services:
   assistant:
+    networks:
+      - dsflow
     build:
       context: ../..
       dockerfile: ./docker/assistant/Dockerfile
     image: dsflow/assistant
+    tty: true
     # environment:
     #   LOAD_EX: n
     # volumes:
@@ -17,3 +20,7 @@ services:
       - $DSFLOW_WORKSPACE/jobs:/jobs
       - $DSFLOW_WORKSPACE/adhoc:/adhoc
       - $DSFLOW_WORKSPACE/datastore:/data
+
+networks:
+  dsflow:
+    external: true

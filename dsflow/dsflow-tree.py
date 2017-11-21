@@ -23,4 +23,5 @@ args = ["docker-compose",
         "-f", docker_compose_assistant,
         ]
 
-subprocess.call(args + ["run", "assistant", "tree", directory, "-dCL", depth], env=my_env)
+subprocess.call(args + ["up", "-d"])
+subprocess.call(args + ["exec", "assistant", "tree", directory, "-dCL", depth], env=my_env)

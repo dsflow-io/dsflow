@@ -2,28 +2,28 @@ import sys
 import os
 import subprocess
 
-pwd = os.environ["PWD"]
+from dsflow_core.cli_utils import validate_env
+
+validate_env()
+
+DSFLOW_ROOT = os.environ["DSFLOW_ROOT"]
 
 # TODO: automatically find all images in dsflow/docker/
-docker_compose_base_file = "dsflow/docker/base/docker-compose.yaml"
-docker_compose_dash = "dsflow/docker/dash/docker-compose.yaml"
-docker_compose_db = "dsflow/docker/db/docker-compose.yaml"
-docker_compose_airflow = "dsflow/docker/airflow/docker-compose.yaml"
-# sys.argv[1]
-
-my_env = os.environ.copy()
-my_env["DSFLOW_WORKSPACE"] = pwd
 
 args = ["docker-compose",
-        "-f", docker_compose_base_file,
-        "-f", docker_compose_db,
-        "-f", docker_compose_dash,
-        "-f", docker_compose_airflow
+        "-f", DSFLOW_ROOT + "/docker/adminer/docker-compose.yaml",
+        "-f", DSFLOW_ROOT + "/docker/airflow/docker-compose.yaml",
+        "-f", DSFLOW_ROOT + "/docker/assistant/docker-compose.yaml",
+        "-f", DSFLOW_ROOT + "/docker/base/docker-compose.yaml",
+        "-f", DSFLOW_ROOT + "/docker/dash/docker-compose.yaml",
+        "-f", DSFLOW_ROOT + "/docker/db/docker-compose.yaml",
+        "-f", DSFLOW_ROOT + "/docker/dsflow-notebook-generator/docker-compose.yaml"
         ]
+
+my_env = os.environ.copy()
 
 # preview
 subprocess.call(args + ["config"], env=my_env)
 
-print(" ".join(args))
-
+# build
 subprocess.call(args + ["build"], env=my_env)

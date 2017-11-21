@@ -4,6 +4,8 @@ services:
     build:
       context: ..
       dockerfile: ./airflow/Dockerfile
+    networks:
+      - dsflow
     image: dsflow/airflow
     # restart_policy:
     #   condition: on-failure
@@ -24,3 +26,7 @@ services:
     ports:
       - "8081:8080"
     command: webserver
+
+networks:
+  dsflow:
+    external: true
