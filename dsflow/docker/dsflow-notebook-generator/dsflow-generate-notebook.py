@@ -1,5 +1,5 @@
-import click
 import os
+import sys
 from dsflow_core.utils import *
 from dsflow_core.models import *
 
@@ -14,11 +14,8 @@ def list_jobs():
     return rv
 
 
-@click.command(short_help="Generate new flow based on a template")
-@click.argument("template-name", required=False)
-@click.argument("flow-name", required=False)
-def generate(template_name, flow_name):
-    """generates and opens new notebook NOTEBOOK_NAME,
+def generate(template_name, dataset_name):
+    """generates and opens new job,
     based on TEMPLATE_NAME"""
 
     if template_name is None:
@@ -32,12 +29,12 @@ def generate(template_name, flow_name):
             show_instructions("    {}".format(name))
 
     else:
-        """Templates are defined by template_specs.yaml and dag_specs.yaml
+        """Templates are defined by template_specs.yaml and job_specs.yaml
 
         Template generation works as follows:
         - create the jobs directory
-        - render dag_specs.yaml
-        - read dag_specs.yaml and look for additional files to render
+        - render job_specs.yaml
+        - read job_specs.yaml and look for additional files to render
         - generate files related to each task
         - read template_specs.yaml
             - generate additional directories
@@ -66,76 +63,82 @@ def generate(template_name, flow_name):
                 if parameter["type"] == "confirm":
                     user_template_parameters[parameter["name"]] = click.confirm(parameter["text"])
 
+        job_name_prefix = template_specs["job_name_prefix"]
+        job_name = job_name_prefix + "-" + dataset_name
+
         # Generate jobs dir
-        jobs_dir = os.path.join(get_jobs_path(), flow_name)
+        jobs_dir = os.path.join(get_jobs_path(), job_name)
         gen.mkdir_and_log(jobs_dir)
 
-        t_parameters = dict(flow_name=flow_name,
+        t_parameters = dict(job_name=job_name,
+                            dataset_name=dataset_name,
                             ds=str(dt.date.today()),
                             **user_template_parameters)
 
-        # genereate dag_specs.yaml
+        # genereate job_specs.yaml
 
-        template_path = os.path.join("jobs", template_name, 'dag_specs.yaml.j2')
-        dag_specs_w_path = os.path.join(get_jobs_path(), flow_name, 'dag_specs.yaml')
+        template_path = os.path.join("jobs", template_name, 'job_specs.yaml.j2')
+        job_specs_w_path = os.path.join(get_jobs_path(), job_name, 'job_specs.yaml')
 
         gen.generate_file_from_template(template_path=template_path,
-                                        target_path=dag_specs_w_path,
+                                        target_path=job_specs_w_path,
                                         **t_parameters)
 
-        with open(os.path.join(dag_specs_w_path), 'r') as f:
-            # read dag_specs
-            dag_specs = yaml.load(f)
+        with open(os.path.join(job_specs_w_path), 'r') as f:
+            # read job_specs
+            job_specs = yaml.load(f)
 
-        # Generate task files
-        for (task_name, task_description) in dag_specs["tasks"].items():
-            if "type" in task_description:
-                # FIXME and task_description["type"] in ["py, sh, notebook"]
 
-                task_type = task_description["type"]
+        if "class" in job_specs:
+            # FIXME check that class is valid
 
-                if "script" in task_description:
-                    target_file_name = task_description["script"]
-                else:
-                    target_file_name = ".".join([task_name, task_type])
+            job_class = job_specs["class"]
 
-                # as a convention the template files use: task_name.task_type.j2
-                task_template_file = ".".join([task_name, task_type, "j2"])
-                task_template_path = os.path.join("jobs", template_name, task_template_file)
-                write_path = os.path.join(get_jobs_path(), flow_name, target_file_name)
+            if "script" in job_specs:
+                target_file_name = job_specs["script"]
+            else:
+                target_file_name = ".".join([job_name, "ipynb"])
 
-                if task_type == "notebook":
-                    """If the template is a notebook, then it has to be
-                    generated based on the python file JOB_NAME.notebook.j2
+            # as a convention the template files use: job_name.job_class.j2
+            task_template_file = ".".join(["notebook", "py", "j2"])
+            task_template_path = os.path.join("jobs", template_name, task_template_file)
+            write_path = os.path.join(get_jobs_path(), job_name, target_file_name)
 
-                    Delimitate new cells with this syntax:
+            if job_class == "JupyterNotebook":
+                """If the template is a notebook, then it has to be
+                generated based on the python file notebook.py.j2
 
-                        # <markdowncell>
+                Delimitate new cells with this syntax:
 
-                        # Initialize environment
+                    # <markdowncell>
 
-                        # <codecell>
+                    # Initialize environment
 
-                        some_code()
-                    """
+                    # <codecell>
 
-                    t = gen.jinja_env.get_template(task_template_path)
-                    contents = t.render(**t_parameters)
+                    some_code()
+                """
 
-                    nb = nbf.v3.reads_py(contents)
-                    nb = nbf.v4.upgrade(nb)
+                t = gen.jinja_env.get_template(task_template_path)
+                contents = t.render(**t_parameters)
 
-                    with open(write_path, "w") as outfile:
-                        nbf.write(nb, outfile)
+                nb = nbf.v3.reads_py(contents)
+                nb = nbf.v4.upgrade(nb)
 
-                    click.echo("     new file         %s" % write_path)
+                with open(write_path, "w") as outfile:
+                    nbf.write(nb, outfile)
 
-                else:
-                    """Otherwise, simply render the file."""
+                click.echo("     new file         %s" % write_path)
 
-                    gen.generate_file_from_template(template_path=task_template_path,
-                                                    target_path=write_path,
-                                                    **t_parameters)
+            else:
+                """Otherwise, simply render the file."""
+
+                gen.generate_file_from_template(template_path=task_template_path,
+                                                target_path=write_path,
+                                                **t_parameters)
+
+        else:
+            raise(Exception("invalid job_specs.yaml (missing class property)"))
 
         # Create new directories
         if "mkdir" in template_specs:
@@ -146,16 +149,15 @@ def generate(template_name, flow_name):
 
                 gen.mkdir_and_log(dir_path)
 
-        # Print flow instructions
+        # Print flow instructions (FIXME!)
         if "instructions" in template_specs:
             click.echo("\nInstructions:")
             show_instructions(Template(template_specs["instructions"])
-                              .render(flow_name=flow_name))
+                              .render(job_name=job_name))
         else:
             show_instructions("\nInstructions:")
-            show_instructions("Edit dag_specs")
-            show_instructions("\n" % flow_name)
+            show_instructions("Edit job_specs")
+            show_instructions("\n" % job_name)
 
 
-if __name__ == '__main__':
-    generate()
+generate(sys.argv[1] if len(sys.argv) > 1 else None, sys.argv[2] if len(sys.argv) > 2 else None)
