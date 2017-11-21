@@ -17,7 +17,7 @@ args = ["docker-compose",
         "-f", DSFLOW_ROOT + "/docker/base/docker-compose.yaml",
         "-f", DSFLOW_ROOT + "/docker/dash/docker-compose.yaml",
         "-f", DSFLOW_ROOT + "/docker/db/docker-compose.yaml",
-        "-f", DSFLOW_ROOT + "/docker/dsflow-notebook-generator/docker-compose.yaml"
+        "-f", DSFLOW_ROOT + "/docker/dsflow-job-generator/docker-compose.yaml"
         ]
 
 my_env = os.environ.copy()

@@ -14,10 +14,10 @@ DSFLOW_WORKSPACE = os.environ["DSFLOW_WORKSPACE"]
 datastore_abs_path = os.path.join(DSFLOW_WORKSPACE, "datastore")
 jobs_abs_path = os.path.join(DSFLOW_WORKSPACE, "jobs")
 
-docker_image_dir = "dsflow-notebook-generator"
+docker_image_dir = "dsflow-job-generator"
 docker_image_id = "dsflow/%s" % docker_image_dir
 
-image_id = "dsflow-notebook-generator"
+image_id = "dsflow-job-generator"
 docker_compose_file = "dsflow/docker/%s/docker-compose.yaml" % image_id
 
 # Rebuild docker image
@@ -33,9 +33,9 @@ args = [
     "docker-compose",
     "-f", docker_compose_file,
     "run",
-    "notebook-generator",
+    "job-generator",
     "python",
-    "dsflow-generate-notebook.py"
+    "dsflow-generate-job.py"
 ] + input_parameters
 
 print("\n========== preview docker run command ===========")

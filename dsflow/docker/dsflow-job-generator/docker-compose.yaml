@@ -1,12 +1,12 @@
 version: '3.3'
 services:
-  notebook-generator:
+  job-generator:
     networks:
       - dsflow
     build:
       context: ../..
-      dockerfile: ./docker/dsflow-notebook-generator/Dockerfile
-    image: dsflow/notebook-generator
+      dockerfile: ./docker/dsflow-job-generator/Dockerfile
+    image: dsflow/job-generator
     environment:
       DSFLOW_DATASTORE_ROOT: /data
       DSFLOW_JOBS_ROOT: /jobs
