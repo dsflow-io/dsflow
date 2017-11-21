@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 from dsflow_core.utils import *
 from dsflow_core.models import *
 
@@ -93,18 +94,14 @@ def generate(template_name, dataset_name):
             # FIXME check that class is valid
 
             job_class = job_specs["class"]
-
-            if "script" in job_specs:
-                target_file_name = job_specs["script"]
-            else:
-                target_file_name = ".".join([job_name, "ipynb"])
-
-            # as a convention the template files use: job_name.job_class.j2
-            task_template_file = ".".join(["notebook", "py", "j2"])
-            task_template_path = os.path.join("jobs", template_name, task_template_file)
+            target_file_name = job_specs["script"]
             write_path = os.path.join(get_jobs_path(), job_name, target_file_name)
 
             if job_class == "JupyterNotebook":
+                # as a convention the template files use: job_name.job_class.j2
+                task_template_file = ".".join(["notebook", "py", "j2"])
+                task_template_path = os.path.join("jobs", template_name, task_template_file)
+
                 """If the template is a notebook, then it has to be
                 generated based on the python file notebook.py.j2
 
@@ -130,12 +127,26 @@ def generate(template_name, dataset_name):
 
                 click.echo("     new file         %s" % write_path)
 
-            else:
+            elif job_class == "CommandLineTool":
                 """Otherwise, simply render the file."""
+                task_template_file = ".".join(["script", "sh", "j2"])
+                task_template_path = os.path.join("jobs", template_name, task_template_file)
 
                 gen.generate_file_from_template(template_path=task_template_path,
                                                 target_path=write_path,
                                                 **t_parameters)
+
+                subprocess.call(["chmod", "+x", write_path])
+
+            else:
+                raise(Exception("Unsupported job class"))
+
+            # render README
+            readme_template_path = os.path.join("jobs", template_name, 'README.md.j2')
+            readme_target_path = os.path.join(get_jobs_path(), job_name, 'README.md')
+            gen.generate_file_from_template(template_path=readme_template_path,
+                                            target_path=readme_target_path,
+                                            **t_parameters)
 
         else:
             raise(Exception("invalid job_specs.yaml (missing class property)"))
@@ -150,14 +161,8 @@ def generate(template_name, dataset_name):
                 gen.mkdir_and_log(dir_path)
 
         # Print flow instructions (FIXME!)
-        if "instructions" in template_specs:
-            click.echo("\nInstructions:")
-            show_instructions(Template(template_specs["instructions"])
-                              .render(job_name=job_name))
-        else:
-            show_instructions("\nInstructions:")
-            show_instructions("Edit job_specs")
-            show_instructions("\n" % job_name)
+        click.echo("\nInstructions:")
+        show_instructions(open(readme_target_path, 'r').read())
 
 
 generate(sys.argv[1] if len(sys.argv) > 1 else None, sys.argv[2] if len(sys.argv) > 2 else None)
