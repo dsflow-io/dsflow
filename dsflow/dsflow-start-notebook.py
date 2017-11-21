@@ -11,7 +11,6 @@ DSFLOW_WORKSPACE = os.environ["DSFLOW_WORKSPACE"]
 
 docker_compose_base_file = "dsflow/docker/base/docker-compose.yaml"
 docker_conpose_db = "dsflow/docker/db/docker-compose.yaml"
-# sys.argv[1]
 
 my_env = os.environ.copy()
 
@@ -20,13 +19,20 @@ args = ["docker-compose",
         "-f", docker_conpose_db,
         ]
 
-subprocess.call(args + ["config"], env=my_env)
+if len(sys.argv) > 1 and sys.argv[1] == "--verbose":
+    print("Rendered docker compose file:")
+    subprocess.call(args + ["config"], env=my_env)
+    print("base args: ", " ".join(args))
 
-# "--volume=%s:/tmp:rw" % tmp_abs_path,
-# "--volume=%s:/data:rw" % datastore_abs_path,
-# "--volume=%s:/jobs:ro" % jobs_abs_path,
+print("=== calling docker-compose ===")
+call_result = subprocess.call(args + ["up", "-d"], env=my_env)
 
-
-print(" ".join(args))
-
-subprocess.call(args + ["up", "-d"], env=my_env)
+if call_result == 0:
+    print("\n=== dsflow instructions ===")
+    print("Open jupyter notebooks in your browser at http://localhost:8888/")
+    print("\nHINTS:")
+    print("- Call `dsflow stop-all` to stop docker containers.")
+    print("- Call `dsflow` to show list of available commands.")
+else:
+    print("\n=== something went wrong ===")
+    print("Reach out to pm@dsflow.io")
