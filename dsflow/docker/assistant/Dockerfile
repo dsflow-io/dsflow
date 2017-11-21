@@ -30,8 +30,6 @@ ADD templates /usr/src/app/templates
 
 WORKDIR /usr/src/app
 
-# ADD docker/dsflow-notebook-generator /usr/src/app
-
 # EXPOSE 8888
 
 # ENV NAME Dsflow

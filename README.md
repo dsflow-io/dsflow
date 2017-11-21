@@ -28,6 +28,14 @@ source init.sh
 ```
 
 
+### Show list of available commands
+
+```
+dsflow
+
+```
+
+
 ### Execute a notebook:
 
 ```
@@ -48,6 +56,6 @@ dsflow start-notebook
 ### Generate table from CSV
 
 ```
-dsflow generate-notebook from_csv TABLE_NAME
+dsflow generate-job create_table_from_csv TABLE_NAME
 
 ```
