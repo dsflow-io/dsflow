@@ -18,34 +18,29 @@ Installation on Windows:
 https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
 
 
-### [optional] install and use dsflow within a virtual environment:
+### Initialize dsflow
+
+Inside the dsflow project directory:
 
 ```
-pip install virtualenv
-virtualenv ~/.venv-dsflow
-source ~/.venv-dsflow/bin/activate
+source init.sh
 
 ```
-
-
-### New dsflow project:
-
-- Normally with `dsflow new PROJECT_NAME`
-- Alternative: just duplicate this directory
 
 
 ### Execute a notebook:
 
 ```
-python dsflow/dsflow-run.py jobs/table-people/create.ipynb 2017-11-09
-
+dsflow run JOB_NAME PARAMETERS
+dsflow run meteo-json-dump 2017-11-09
+dsflow run meteo-create-table 2017-11-09
 
 ```
 
 ### Launch notebook environment:
 
 ```
-python dsflow/dsflow-start-notebook.py
+dsflow start-notebook
 
 ```
 
@@ -53,6 +48,6 @@ python dsflow/dsflow-start-notebook.py
 ### Generate table from CSV
 
 ```
-python dsflow/dsflow-generate-notebook.py from_csv
+dsflow generate-notebook from_csv TABLE_NAME
 
 ```
