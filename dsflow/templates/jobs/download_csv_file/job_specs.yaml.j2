@@ -1,0 +1,16 @@
+version: '0.1'
+description: Create table {{ dataset_name }}
+class: CommandLineTool
+image: ""  # not implemented
+script: {{ job_name }}.sh
+
+job_parameters:
+  - ds
+
+task_specs:
+  source_path: "{{ source_url }}"
+  sink_path: "/data/raw/{{ dataset_name }}/ds={% raw %}{{ ds }}{% endraw %}"
+  ds: "{% raw %}{{ ds }}{% endraw %}"
+
+# dependencies:
+#   - other-job-name
