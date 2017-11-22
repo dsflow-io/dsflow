@@ -4,7 +4,7 @@ import subprocess
 import yaml
 import json
 
-from dsflow_core.cli_utils import validate_env
+from python_scripts.dsflow_core.cli_utils import validate_env
 
 validate_env()
 

@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 
-from dsflow_core import models
+from python_scripts.dsflow_core import models
 
 pwd = os.environ["PWD"]
 tmp_abs_path = os.path.join(pwd, "tmp")

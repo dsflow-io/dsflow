@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 
-from dsflow_core.cli_utils import validate_env
+from python_scripts.dsflow_core.cli_utils import validate_env
 
 validate_env()
 
@@ -35,7 +35,7 @@ args = [
     "run",
     "job-generator",
     "python",
-    "dsflow-generate-job.py"
+    "python_scripts/dsflow-generate-job.py"
 ] + input_parameters
 
 print("\n========== preview docker run command ===========")

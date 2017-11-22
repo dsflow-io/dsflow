@@ -1,2 +1,2 @@
 import sys
-sys.path.insert(0, '/python-packages/')
+sys.path.insert(0, '/python_scripts/')

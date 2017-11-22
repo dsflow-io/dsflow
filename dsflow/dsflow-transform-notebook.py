@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 
-from dsflow_core.cli_utils import validate_env
+from python_scripts.dsflow_core.cli_utils import validate_env
 
 validate_env()
 
@@ -35,7 +35,7 @@ args = [
     "run",
     "job-generator",
     "python",
-    "transform-ipynb-to-py.py",
+    "python_scripts/transform-ipynb-to-py.py",
 ] + input_parameters
 
 print("\n========== preview docker run command ===========")

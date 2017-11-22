@@ -81,7 +81,7 @@ class DsflowGenerator:
             self.app_path = get_app_path()
 
         self.jinja_env = Environment(
-            loader=FileSystemLoader(os.path.join(DSFLOW_ROOT, 'templates'))
+            loader=FileSystemLoader(os.path.join(DSFLOW_ROOT, '..', 'templates'))
         )
 
 
