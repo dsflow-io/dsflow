@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+  schema-generator:
+    networks:
+      - dsflow
+    build:
+      context: ../..
+      dockerfile: ./docker/dsflow-schema-generator/Dockerfile
+    image: dsflow/schema-generator
+    environment:
+      DSFLOW_DATASTORE_ROOT: /data
+      DSFLOW_JOBS_ROOT: /jobs
+      DSFLOW_ROOT: /usr/src/app
+    # ports:
+    #   - 4040:4040
+    #   - 8998:8998
+    #   - 8888:8888
+    expose:
+      - 8998
+    volumes:
+      - $DSFLOW_WORKSPACE/datastore:/data
+      - $DSFLOW_WORKSPACE/tmp/schema-generator:/tmp/schema-generator
+      - $DSFLOW_WORKSPACE/jobs:/jobs
+      - $DSFLOW_WORKSPACE/adhoc:/adhoc
+      - $DSFLOW_ROOT/python_scripts:/usr/src/app/python_scripts
+
+networks:
+  dsflow:
+    external: true
