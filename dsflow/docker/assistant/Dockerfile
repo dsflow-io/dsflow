@@ -23,7 +23,7 @@ RUN pip install configparser && \
 
 RUN apt-get update && apt-get install tree
 
-ADD dsflow_core /usr/src/app/dsflow
+ADD python_scripts/dsflow_core /usr/src/app/dsflow
 ADD templates /usr/src/app/templates
 
 # RUN pip install -e /usr/src/app/dsflow

@@ -13,8 +13,8 @@ def transform(notebook_name):
     but does not create the task.
     """
 
-    input_file = '/jobs/%s.ipynb' % notebook_name
-    output_file = '/jobs/%s.py' % notebook_name
+    input_file = '/%s.ipynb' % notebook_name
+    output_file = '/%s.py' % notebook_name
     click.echo("will create %s" % output_file)
 
     mkdir_if_needed(filename=output_file)

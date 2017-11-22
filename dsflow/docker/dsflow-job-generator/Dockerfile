@@ -21,14 +21,14 @@ RUN pip install configparser && \
     pip install click-spinner && \
     pip install envparse==0.2.0
 
-ADD dsflow_core /usr/src/app/dsflow_core
+# ADD python_scripts/dsflow_core /usr/src/app/dsflow_core
 ADD templates /usr/src/app/templates
 
 # RUN pip install -e /usr/src/app/dsflow
 
 WORKDIR /usr/src/app
 
-ADD docker/dsflow-job-generator /usr/src/app
+# ADD docker/dsflow-job-generator /usr/src/app
 
 # EXPOSE 8888
 

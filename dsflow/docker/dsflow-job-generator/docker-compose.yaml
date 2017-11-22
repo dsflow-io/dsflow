@@ -19,8 +19,10 @@ services:
       - 8998
     volumes:
       - $DSFLOW_WORKSPACE/datastore:/data
+      - $DSFLOW_WORKSPACE/adhoc:/adhoc
       - $DSFLOW_WORKSPACE/jobs:/jobs
-      - $DSFLOW_ROOT/dsflow_core=/usr/src/app
+      - $DSFLOW_ROOT/python_scripts:/usr/src/app/python_scripts
+      - $DSFLOW_ROOT/templates:/usr/src/app/templates
 
 networks:
   dsflow:

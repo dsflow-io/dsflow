@@ -24,7 +24,7 @@ def generate(template_name, dataset_name):
         existing flow templates.
         """
 
-        click.echo("Usage: dsflow generate TEMPLATE_NAME FLOW_NAME...")
+        print("Usage: dsflow generate TEMPLATE_NAME FLOW_NAME...")
         show_instructions("\nChoose one of these templates:")
         for name in list_jobs():
             show_instructions("    {}".format(name))
@@ -125,7 +125,7 @@ def generate(template_name, dataset_name):
                 with open(write_path, "w") as outfile:
                     nbf.write(nb, outfile)
 
-                click.echo("     new file         %s" % write_path)
+                print("     new file         %s" % write_path)
 
             elif job_class == "CommandLineTool":
                 """Otherwise, simply render the file."""
@@ -161,7 +161,7 @@ def generate(template_name, dataset_name):
                 gen.mkdir_and_log(dir_path)
 
         # Print flow instructions (FIXME!)
-        click.echo("\nInstructions:")
+        print("\nInstructions:")
         show_instructions(open(readme_target_path, 'r').read())
 
 

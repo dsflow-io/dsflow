@@ -23,13 +23,14 @@ services:
       - $DSFLOW_WORKSPACE/workflows:/home/jovyan/workflows
       - $DSFLOW_WORKSPACE/jobs:/home/jovyan/jobs
       - $DSFLOW_WORKSPACE/adhoc:/home/jovyan/adhoc
+      - $DSFLOW_WORKSPACE/adhoc:/adhoc
       - $DSFLOW_WORKSPACE/datastore:/home/jovyan/datastore
       - $DSFLOW_WORKSPACE/dsflow/config/ipython-conf:/home/jovyan/.ipython
       - $DSFLOW_WORKSPACE/dsflow/config/jupyter-conf:/home/jovyan/.jupyter
       - $DSFLOW_WORKSPACE/dsflow/config/spark-conf:/home/jovyan/.spark-conf
       - $DSFLOW_WORKSPACE/tmp/jupyter:/home/jovyan/.local/share/jupyter
       - $DSFLOW_WORKSPACE/tmp/spark:/home/jovyan/.spark
-      - $DSFLOW_WORKSPACE/dsflow/dsflow_core:/python-packages/dsflow_core
+      - $DSFLOW_WORKSPACE/dsflow/python_scripts:/python_scripts
 
 
 networks:
