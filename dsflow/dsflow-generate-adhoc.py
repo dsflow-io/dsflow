@@ -23,6 +23,7 @@ if not is_valid_dataset_name(dataset_name):
 
 # Paths, ids and env. variables
 DSFLOW_WORKSPACE = os.environ["DSFLOW_WORKSPACE"]
+DSFLOW_ROOT = os.environ["DSFLOW_ROOT"]
 datastore_abs_path = os.path.join(DSFLOW_WORKSPACE, "datastore")
 jobs_abs_path = os.path.join(DSFLOW_WORKSPACE, "jobs")
 
@@ -30,7 +31,7 @@ docker_image_dir = "dsflow-job-generator"
 docker_image_id = "dsflow/%s" % docker_image_dir
 
 image_id = "dsflow-job-generator"
-docker_compose_file = "dsflow/docker/%s/docker-compose.yaml" % image_id
+docker_compose_file = DSFLOW_ROOT + "/docker/%s/docker-compose.yaml" % image_id
 
 
 # download file
@@ -56,7 +57,7 @@ else:
 # infer schema
 args = [
     "docker-compose",
-    "-f", "dsflow/docker/dsflow-schema-generator/docker-compose.yaml",
+    "-f", DSFLOW_ROOT + "/docker/dsflow-schema-generator/docker-compose.yaml",
     "run",
     "schema-generator",
     "python",

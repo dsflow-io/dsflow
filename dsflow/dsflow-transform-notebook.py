@@ -11,6 +11,7 @@ input_parameters = sys.argv[1:]
 
 # Paths, ids and env. variables
 DSFLOW_WORKSPACE = os.environ["DSFLOW_WORKSPACE"]
+DSFLOW_ROOT = os.environ["DSFLOW_ROOT"]
 datastore_abs_path = os.path.join(DSFLOW_WORKSPACE, "datastore")
 jobs_abs_path = os.path.join(DSFLOW_WORKSPACE, "jobs")
 
@@ -18,7 +19,7 @@ docker_image_dir = "dsflow-job-generator"
 docker_image_id = "dsflow/%s" % docker_image_dir
 
 image_id = "dsflow-job-generator"
-docker_compose_file = "dsflow/docker/%s/docker-compose.yaml" % image_id
+docker_compose_file = DSFLOW_ROOT + "/docker/%s/docker-compose.yaml" % image_id
 
 # Rebuild docker image
 if input_parameters and input_parameters[0] == "--build":

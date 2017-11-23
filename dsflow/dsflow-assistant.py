@@ -4,6 +4,7 @@ import subprocess
 
 from python_scripts.dsflow_core import models
 
+DSFLOW_ROOT = os.environ["DSFLOW_ROOT"]
 
 # pwd = os.environ["PWD"]
 # tmp_abs_path = os.path.join(pwd, "tmp")
@@ -12,7 +13,7 @@ from python_scripts.dsflow_core import models
 #
 # DSFLOW_WORKSPACE = pwd
 #
-# docker_compose_assistant = "dsflow/docker/assistant/docker-compose.yaml"
+# docker_compose_assistant = DSFLOW_ROOT + "/docker/assistant/docker-compose.yaml"
 # # sys.argv[1]
 #
 # my_env = os.environ.copy()

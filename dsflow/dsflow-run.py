@@ -44,7 +44,7 @@ my_env = os.environ.copy()
 if job_specs["class"] == "JupyterNotebook":
     image_id = "base"  # FIXME
 
-    docker_compose_file = "dsflow/docker/%s/docker-compose.yaml" % image_id
+    docker_compose_file = DSFLOW_ROOT + "/docker/%s/docker-compose.yaml" % image_id
 
     args = [
         "docker-compose",
@@ -76,7 +76,7 @@ if job_specs["class"] == "JupyterNotebook":
 elif job_specs["class"] == "CommandLineTool":
     image_id = "base"
 
-    docker_compose_file = "dsflow/docker/%s/docker-compose.yaml" % image_id
+    docker_compose_file = DSFLOW_ROOT + "/docker/%s/docker-compose.yaml" % image_id
 
     args = [
         "docker-compose",
