@@ -22,7 +22,7 @@ RUN pip install configparser && \
     pip install envparse==0.2.0
 
 # ADD python_scripts/dsflow_core /usr/src/app/dsflow_core
-ADD templates /usr/src/app/templates
+# ADD templates /usr/src/app/templates
 
 # RUN pip install -e /usr/src/app/dsflow
 
