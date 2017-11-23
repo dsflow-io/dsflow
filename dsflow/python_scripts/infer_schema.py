@@ -38,6 +38,9 @@ df.printSchema()
 schema = df.schema.json()
 schema_dict = json.loads(schema)
 
+print("Json schema:")
+print(schema)
+
 # def clean_keys(fields):
 #    for item in fields:
 #        if isinstance(item, dict):
