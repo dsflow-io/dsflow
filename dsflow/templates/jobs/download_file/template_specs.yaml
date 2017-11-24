@@ -1,6 +1,6 @@
 version: '0.1'
 
-job_name_prefix: download-csv
+job_name_prefix: download
 
 template_parameters:
   - name: source_url
@@ -9,7 +9,3 @@ template_parameters:
   - name: unzip
     type: confirm
     text: "Do you need to unzip the file?"
-
-
-mkdir:
-  - "datastore://raw/{{ flow_name }}/ds={{ ds }}"
