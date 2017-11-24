@@ -1,3 +1,13 @@
+# install python libraries
+if hash pip 2>/dev/null; then
+    pip install pyyaml
+elif hash pip3 2>/dev/null; then
+    pip3 install pyyaml
+else
+    echo "pip not found. Please install Python."
+fi
+
+
 export DSFLOW_WORKSPACE=$(pwd)
 export DSFLOW_ROOT=$(pwd)/dsflow
 

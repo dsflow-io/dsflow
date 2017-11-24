@@ -11,7 +11,7 @@ DSFLOW_ROOT = environ["DSFLOW_ROOT"]
 
 print("=== available commands ===")
 
-commands = sorted([re.fullmatch("dsflow-(.*).py", f)[1]
+commands = sorted([re.match("dsflow-(.*).py", f).group(1)
                    for f in listdir(DSFLOW_ROOT)
                    if (isfile(join(DSFLOW_ROOT, f)) and "dsflow-" in f)])
 
