@@ -11,7 +11,6 @@ from textwrap import dedent
 import subprocess
 
 from .utils import get_datastore_path, get_flows_path
-from .models import *
 
 
 def display_html_h4(value):
@@ -89,46 +88,12 @@ class DsflowContext:
         return(raw_contents)
 
     @classmethod
-    def list_flows(self):
-
-        raw_contents = os.walk(get_flows_path())
-
-        for (path, dir_names, file_names) in raw_contents:
-            if "dag_specs.yaml" in file_names:
-                print(path)
-                for f in file_names:
-                    print("        " + f)
-                print("")
-
-        return(raw_contents)
-
-    @classmethod
     def validade_task_specs(self, task_specs):
         return "not implemented"
 
     @classmethod
     def validade_task_output(self, task_specs):
         return "not implemented"
-
-
-    @classmethod
-    def get_flow(self, flow_name):
-        return Flow(flow_name)
-
-    @classmethod
-    def get_config(self, flow_name, task_name, notebook_ds):
-
-        # Get flow
-        # All parameters are defined in dag_specs.yaml
-        flow = self.get_flow(flow_name)
-
-        # Get task instance
-        task_instance = flow.get_task_instance(task_name, ds=notebook_ds)
-
-        # Get task variables:
-        return dict(source_path=task_instance.ds_read_path(),
-                    sink_path=task_instance.ds_write_path(),
-                    ds=task_instance.ds)
 
     @classmethod
     def display(self, df, num_rows=10):
