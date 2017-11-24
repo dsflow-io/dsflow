@@ -138,8 +138,19 @@ def generate(template_name, dataset_name):
 
                 subprocess.call(["chmod", "+x", write_path])
 
+
+            elif job_class == "PlotlyDashApplication":
+                    """Otherwise, simply render the file."""
+                    task_template_file = ".".join(["dashboard", "py", "j2"])
+                    task_template_path = os.path.join("jobs", template_name, task_template_file)
+
+                    gen.generate_file_from_template(template_path=task_template_path,
+                                                    target_path=write_path,
+                                                    **t_parameters)
+
             else:
                 raise(Exception("Unsupported job class"))
+
 
             # render README
             readme_template_path = os.path.join("jobs", template_name, 'README.md.j2')

@@ -13,11 +13,14 @@ services:
     #   max_attempts: 3
     #   window: 120s
     volumes:
-      - $DSFLOW_WORKSPACE/workflows:/home/dash/workflows
-      - $DSFLOW_WORKSPACE/jobs:/home/dash/jobs
-      - $DSFLOW_WORKSPACE/adhoc:/home/dash/adhoc
-      - $DSFLOW_WORKSPACE/datastore:/home/dash/datastore
+      - $DSFLOW_WORKSPACE/workflows:/workflows
+      - $DSFLOW_WORKSPACE/jobs:/jobs
+      - $DSFLOW_WORKSPACE/adhoc:/adhoc
       - $DSFLOW_WORKSPACE/datastore:/data
     ports:
       - 8050:8050
     command: /bin/bash
+
+networks:
+  dsflow:
+    external: true

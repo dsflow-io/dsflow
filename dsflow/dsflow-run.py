@@ -24,15 +24,21 @@ print("input_parameters :", input_parameters)
 job_specs_path = os.path.join(jobs_abs_path, job_name, "job_specs.yaml")
 job_specs_raw = yaml.load(open(job_specs_path, 'r'))
 
-job_parameters = {job_specs_raw["job_parameters"][key]: input_parameters[key]
-                  for key in range(len(input_parameters))}
+try:
+    job_parameters = {job_specs_raw["job_parameters"][key]: input_parameters[key]
+                      for key in range(len(input_parameters))}
 
-# FIXME: this is hardcoded for now
-job_specs = job_specs_raw.copy()
+    # FIXME: this is hardcoded for now
+    job_specs = job_specs_raw.copy()
 
-for key in job_specs["task_specs"]:
-    job_specs["task_specs"][key] = \
-        job_specs["task_specs"][key].replace("{{ ds }}", job_parameters["ds"])
+    if "task_specs" in job_specs:
+        for key in job_specs["task_specs"]:
+            job_specs["task_specs"][key] = \
+                job_specs["task_specs"][key].replace("{{ ds }}", job_parameters["ds"])
+
+except:
+    raise(Exception("missing parameters:", job_specs_raw["job_parameters"]))
+
 
 print(job_parameters)
 print(job_specs)
@@ -92,6 +98,25 @@ elif job_specs["class"] == "CommandLineTool":
 
     subprocess.call(args, env=my_env)
 
+
+elif job_specs["class"] == "PlotlyDashApplication":
+    image_id = "dash"
+
+    docker_compose_file = DSFLOW_ROOT + "/docker/%s/docker-compose.yaml" % image_id
+
+    args = [
+        "docker-compose",
+        "-f", docker_compose_file,
+        "run",
+        "--service-ports",  # expose port (false by default with docker-compose run)
+        "dash",
+        "python",
+        script_container_path
+    ]
+
+    print(" ".join(args))
+
+    subprocess.call(args, env=my_env)
 
 else:
     raise(Exception("unknown job class"))
