@@ -24,7 +24,7 @@ def generate(template_name, dataset_name):
         existing flow templates.
         """
 
-        print("Usage: dsflow generate TEMPLATE_NAME FLOW_NAME...")
+        print("Usage: dsflow generate-job TEMPLATE_NAME JOB_NAME...")
         show_instructions("\nChoose one of these templates:")
         for name in list_jobs():
             show_instructions("    {}".format(name))
