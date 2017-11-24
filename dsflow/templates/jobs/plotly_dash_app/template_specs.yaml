@@ -1,0 +1,17 @@
+version: '0.1'
+
+job_name_prefix: dashboard
+
+template_parameters:
+  - name: source_table_name
+    type: prompt
+    text: Please provide the source table name
+  - name: x_axis
+    type: prompt
+    text: Please provide the source x axis column name
+  - name: y_axis
+    type: prompt
+    text: Please provide the source y axis column name
+  - name: include_table
+    type: confirm
+    text: "Do you need to include the table?"

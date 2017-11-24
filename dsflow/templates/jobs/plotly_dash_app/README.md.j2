@@ -1,0 +1,15 @@
+# job: {{ job_name }}
+
+1) Edit job_specs.yaml to customize dashboard specifications
+
+For instance, add dependencies:
+```
+dependencies:
+  - UPSTREAM_JOB_NAME
+```
+
+2) Run your dashboard with `dsflow run {{ job_name }}`
+
+3) Go to http://localhost:8050/ to see the dashboard
+
+4) Edit {{ job_name }}.py to customize your dashboard
