@@ -65,7 +65,7 @@ raw_data = spark.read.text(source_path)
 dataset = (spark
 .read
 .options(wholeFile=True, inferSchema=True)
-.json(source_path)
+.csv(source_path)
 )
 
 # <markdowncell>
@@ -100,7 +100,7 @@ dsflow.display(dataset.describe())
 
 # <markdowncell>
 
-# ## \[4- write on disk\] write down the output to disk
+# ## \[4- write on disk\] write the output as parquet
 
 # <codecell>
 
