@@ -1,0 +1,31 @@
+# specifications for `dsflow menu`
+assistant:
+  short_description: "<EXPERIMENTAL> Get started with dsflow."
+build-images:
+  short_description: Build or rebuild Docker images
+compose:
+  short_description: Run docker-compose with default setting.
+generate-adhoc:
+  short_description: <EXPERIMENTAL> Generate a notebook for adhoc study.
+generate-job:
+  short_description: Generate a job based on a template.
+infer-schema:
+  short_description: <EXPERIMENTAL> Infer the schema of a csv or json dataset.
+menu:
+  short_description: Show this menu
+run:
+  short_description: Run a job.
+start-adminer:
+  short_description: Start adminer
+start-airflow:
+  short_description: Start Airflow
+start-dash:
+  short_description: Start Dash
+start-jupyter:
+  short_description: Start Jupyter and Pyspark container
+stop-all:
+  short_description: Stop all containers
+transform-notebook:
+  short_description: Transform a Jupyter notebook into a Python script
+tree:
+  short_description: Show the sub-directories of your dsflow project
