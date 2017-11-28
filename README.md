@@ -1,36 +1,23 @@
-# dsflow v-0.3.1
+# dsflow [beta release]
+
+v-0.3.1
 
 ![dsflow logo](docs/src/dsflow-logo.png?raw=true "dsflow")
 
-_IMPORTANT: this is an early release of dsflow, designed for prototyping of data pipeline on your own computer._
+_IMPORTANT: this is an early release of dsflow. It enables you to prototype data pipelines your own computer. Support for deployment to cloud platforms will come in a future release._
 
+**Contents:**
 
-<!-- TOC depthFrom:2 depthTo:3 withLinks:1 updateOnSave:1 orderedList:0 -->
+<!-- TOC depthFrom:2 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [What is dsflow?](#what-is-dsflow)
 - [TL;DR;](#tldr)
-- [Dsflow tech stack 360](#dsflow-tech-stack-360)
-- [Dsflow core principles](#dsflow-core-principles)
-	- [A pipeline is a chain of jobs](#a-pipeline-is-a-chain-of-jobs)
-	- [Separation of compute and storage](#separation-of-compute-and-storage)
-	- [Containerization](#containerization)
-	- [Daily partitions of data](#daily-partitions-of-data)
+- [Tech stack 360](#tech-stack-360)
+- [Core principles](#core-principles)
 - [Documentation](#documentation)
-	- [Requirements](#requirements)
-	- [Initialize dsflow](#initialize-dsflow)
-	- [Show list of available commands](#show-list-of-available-commands)
-	- [Quickly download and explore dataset](#quickly-download-and-explore-dataset)
-	- [Execute a notebook:](#execute-a-notebook)
-	- [Launch notebook environment:](#launch-notebook-environment)
-	- [Generate table from CSV](#generate-table-from-csv)
 - [Current limitations / known issues](#current-limitations-known-issues)
 - [Beta testers](#beta-testers)
 - [FAQ](#faq)
-	- [Is dsflow available on Windows?](#is-dsflow-available-on-windows)
-	- [Why is dsflow an Open Source framework?](#why-is-dsflow-an-open-source-framework)
-	- [What is the product roadmap?](#what-is-the-product-roadmap)
-	- [How can I contribute to dsflow?](#how-can-i-contribute-to-dsflow)
-	- [Any good articles about data science best practices?](#any-good-articles-about-data-science-best-practices)
 
 <!-- /TOC -->
 
@@ -47,8 +34,6 @@ Interested? Subscribe to our mailing list on [dsflow.io](http://dsflow.io)
 
 ## TL;DR;
 
-If you're in a hurry, follow these steps to get a sense of how dsflow works.
-
 - install or update Docker 🐳 (`brew cask install docker`)
 - clone this git repo
 - execute `source init.sh` to initialize the dsflow environment and build docker images (_it might take over 10 minutes to download all sources_ ☕️)
@@ -62,7 +47,7 @@ If you're in a hurry, follow these steps to get a sense of how dsflow works.
 See documentation below for detailed instructions.
 
 
-## Dsflow tech stack 360
+## Tech stack 360
 
 Those are the defaults when adopting dsflow:
 
@@ -75,24 +60,24 @@ Those are the defaults when adopting dsflow:
 - Collaborate with your team using Github (or any [version control systems](https://en.wikipedia.org/wiki/Version_control)).
 
 
-## Dsflow core principles
+## Core principles
 
 **Note**: if you're not familiar with the following principles,  
 dsflow CLI and dsflow Job Templates will help you adopt them.
 
-- Pipelines are made of jobs
-- Separation of compute and storage
-- Containerization
-- Daily partitions of data
+- a) Pipelines are made of jobs
+- b) Separation of compute and storage
+- c) Containerization
+- d) Daily partitions of data
 
 
-### A pipeline is a chain of jobs
+### a) A pipeline is a chain of jobs
 
 The concept of _pipeline_ in dsflow inherits from the concept of _DAG_ in Airflow.  A _Directed Acyclic Graph_ is a collection of all the jobs you want to run, organized in a way that reflects their relationships and dependencies.
 
 A data pipeline is also called a _workflow_.
 
-_Jobs_ are single units of data transformation. They take one or multiple inputs and produce an output. Most of the work of Data Scientists consists in creating jobs, and improving them constantly, through successive iterations.
+**Note ⚠️**: dsflow v-0.3.1 DOES NOT provide the assistant for generation of pipelines. Yet, you can create your pipelines using Airflow. DIY.
 
 
 #### Typical dsflow pipeline
@@ -102,10 +87,16 @@ _Jobs_ are single units of data transformation. They take one or multiple inputs
 
 #### Zoom on jobs: inputs and outputs
 
+_Jobs_ are single units of data transformation. They take one or multiple **inputs** and produce an **output**. Most of the work of Data Scientists consists in creating jobs, and improving them constantly, through successive iterations.
+
+Notebook environments are well suited for data exploration and experimentation. Then it's natural to turn a notebook into a job. With dsflow, you'll be able to parametrize your notebooks by specifying input and output values. Notebooks become **first-class** jobs.
+
+
+
 ![example job inputs and outputs](docs/src/example_job_inputs_outputs.png)
 
 
-### Separation of compute and storage
+### b) Separation of compute and storage
 
 Unlike traditional databases, dsflow relies on the principle of separation of compute and storage.
 
@@ -125,7 +116,7 @@ When you run dsflow on your computer, your resources -- **data**, jobs, notebook
 For instance, a given job should be able to process either local data or distant data.
 
 
-### Containerization
+### c) Containerization
 
 Running your jobs within Docker containers bring many advantages:
 
@@ -139,7 +130,7 @@ Execute a script on your laptop or in the cloud seamlessly. Stay independent fro
 Each task (instance of a job) runs in its own container. It allows a better allocation of resources: running tasks in parallel, using a memory configuration optimized for each task.
 
 
-### Daily partitions of data
+### d) Daily partitions of data
 
 _\[important: this section is merely about conventions\]_
 
