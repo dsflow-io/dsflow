@@ -6,6 +6,9 @@ v-0.3.1
 
 _IMPORTANT: this is an early release of dsflow. It enables you to prototype data pipelines your own computer. Support for deployment to cloud platforms will come in a future release._
 
+⚠️⚠️⚠️ dsflow v-0.3.1 focuses on the generation of individual jobs (the elements of the pipeline), but doesn't yet generate the pipelines (as such). Pipeline management will be the focus of the dsflow v-0.4 ⚠️⚠️⚠️
+
+
 **Contents:**
 
 <!-- TOC depthFrom:2 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
@@ -15,9 +18,7 @@ _IMPORTANT: this is an early release of dsflow. It enables you to prototype data
 - [Tech stack 360](#tech-stack-360)
 - [Core principles](#core-principles)
 - [Documentation](#documentation)
-- [Current limitations / known issues](#current-limitations-known-issues)
-- [Beta testers](#beta-testers)
-- [FAQ](#faq)
+- [Current limitations / hacks](#current-limitations-hacks)
 
 <!-- /TOC -->
 
@@ -35,7 +36,7 @@ Interested? Subscribe to our mailing list on [dsflow.io](http://dsflow.io)
 ## TL;DR;
 
 - install or update Docker 🐳 (`brew cask install docker`)
-- clone this git repo
+- clone this git repository (`git clone ...`) and `cd` into it.
 - execute `source init.sh` to initialize the dsflow environment and build docker images (_it might take over 10 minutes to download all sources_ ☕️)
 - execute `dsflow` to see the list of dsflow commands
 - execute `dsflow generate-job`: display the list of job templates
@@ -206,15 +207,12 @@ Installation on Ubuntu: https://docs.docker.com/engine/installation/linux/docker
 - Docker-compose: make sure it's up-to-date (dsflow requires support for version '3.3')
 
 
-
-
 ### Initialize dsflow
 
 Inside the dsflow project directory:
 
 ```
 source init.sh
-
 ```
 
 **In depth:**
@@ -229,94 +227,43 @@ For instance, `dsflow tree` will execute `python dsflow/dsflow-tree.py`
 dsflow
 ```
 
-
-### Quickly download and explore dataset
-
-run `dsflow generate-adhoc NOTEBOOK_NAME DATASET_URL csv|json`: dsflow will generate a notebook `NOTEBOOK_NAME` and will help you explore a csv or json dataset.
-
-
-JSON files:
+### Show list of job templates
 
 ```
-dsflow generate-adhoc meteo_paris "https://data.opendatasoft.com/explore/dataset/prevision-meteo-paris-arome@paris-saclay/download/?format=json&timezone=Europe/Berlin" json
+dsflow generate-job
 ```
 
-CSV files:
+
+### Generate a job from a template
 
 ```
-dsflow generate-adhoc meteo_france "https://data.opendatasoft.com/explore/dataset/donnees-synop-agregees-journalier@api-agro/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true" csv
+dsflow generate-job TEMPLATE_NAME JOB_NAME
+dsflow generate-job download_file meteoparis
+dsflow generate-job create_table_from_json meteoparis
 ```
 
-Notes:
-
-- make sure URL is quoted with \"
-
+**Hint**: Discover open data source on https://data.opendatasoft.com/explore/?q=meteo
 
 
 ### Execute a notebook:
 
 ```
 dsflow run JOB_NAME PARAMETERS
-dsflow run meteo-json-dump 2017-11-09
-dsflow run meteo-create-table 2017-11-09
-
+dsflow run download-meteoparis 2017-11-09
+dsflow run create-table-meteoparis 2017-11-09
 ```
 
-### Launch notebook environment:
+### Launch notebook environment to edit your notebooks
 
 ```
 dsflow start-notebook
-
 ```
 
-
-### Generate table from CSV
-
-```
-dsflow generate-job create_table_from_csv TABLE_NAME
-
-```
-
-## Current limitations / known issues
-
-- python scripts --> bash scripts
-- only the `ds` partition is available
-- dsflow.load_tables() : we should specify if a table is "fct" or "dim"
+Default password is `green3`
 
 
-## Beta testers
+## Current limitations / hacks
 
-We put together a pool of beta testers.
-
-
-## FAQ
-
-### Is dsflow available on Windows?
-
-dsflow hasn't been tested on Windows yet.
-
-We recommend the use of [Windows 10 linux shell](https://msdn.microsoft.com/en-us/commandline/wsl/install-win10).
-
-Install Docker on Windows:
-https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
-
-
-### Why is dsflow an Open Source framework?
-
-How is dsflow going to make money?
-
-
-
-### What is the product roadmap?
-
-
-
-### How can I contribute to dsflow?
-
-
-### Any good articles about data science best practices?
-
-
-BI data with Spark SQL
-
-https://www.slideshare.net/SparkSummit/07-blagoy-kaloferov
+- Dsflow CLI uses python scripts to execute `docker-compose`... that's definitely NOT a great design. In the future we'll either use 100% bash scripts or use docker Python libraries.
+- Currently, the `ds` partition is compulsory. We're not making it easy to use hourly or weekly partitions of data.
+- Fact tables vs. dimension tables: this is pure convention... dsflow doesn't yet help you deal specifically with one type or the other. It's an issue when running `dsflow.load_tables()`: we assume that all tables are fact tables, and all partitions are loaded. Don't forget to filter your table using the `ds` partition.
