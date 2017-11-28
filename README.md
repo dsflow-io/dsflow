@@ -42,7 +42,7 @@ Interested? Subscribe to our mailing list on [dsflow.io](http://dsflow.io)
 - execute `dsflow generate-job`: display the list of job templates
 - execute `dsflow generate-job TEMPLATE_NAME JOB_NAME`: generate a job based on a template
 - execute `dsflow run JOB_NAME`: runs the job in its associated container
-- execute `dsflow start-jupyter` to open the default IDE in your browser (Jupyter Lab with pyspark) at http://localhost:8888/
+- execute `dsflow start-jupyter` to open the default IDE in your browser (Jupyter Lab with pyspark) at http://localhost:8888/ (default password = `green3`)
 - execute `dsflow stop-all` to terminate all dsflow Docker containers.
 
 See documentation below for detailed instructions.
