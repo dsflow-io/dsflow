@@ -5,6 +5,36 @@
 _IMPORTANT: this is an early release of dsflow, designed for prototyping of data pipeline on your own computer._
 
 
+<!-- TOC depthFrom:2 depthTo:3 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [What is dsflow?](#what-is-dsflow)
+- [TL;DR;](#tldr)
+- [Dsflow tech stack 360](#dsflow-tech-stack-360)
+- [Dsflow core principles](#dsflow-core-principles)
+	- [A pipeline is a chain of jobs](#a-pipeline-is-a-chain-of-jobs)
+	- [Separation of compute and storage](#separation-of-compute-and-storage)
+	- [Containerization](#containerization)
+	- [Daily partitions of data](#daily-partitions-of-data)
+- [Documentation](#documentation)
+	- [Requirements](#requirements)
+	- [Initialize dsflow](#initialize-dsflow)
+	- [Show list of available commands](#show-list-of-available-commands)
+	- [Quickly download and explore dataset](#quickly-download-and-explore-dataset)
+	- [Execute a notebook:](#execute-a-notebook)
+	- [Launch notebook environment:](#launch-notebook-environment)
+	- [Generate table from CSV](#generate-table-from-csv)
+- [Current limitations / known issues](#current-limitations-known-issues)
+- [Beta testers](#beta-testers)
+- [FAQ](#faq)
+	- [Is dsflow available on Windows?](#is-dsflow-available-on-windows)
+	- [Why is dsflow an Open Source framework?](#why-is-dsflow-an-open-source-framework)
+	- [What is the product roadmap?](#what-is-the-product-roadmap)
+	- [How can I contribute to dsflow?](#how-can-i-contribute-to-dsflow)
+	- [Any good articles about data science best practices?](#any-good-articles-about-data-science-best-practices)
+
+<!-- /TOC -->
+
+
 ## What is dsflow?
 
 We're pleased to introduce _dsflow_ — the **framework for data science**.
@@ -15,12 +45,14 @@ Eventually you'll be able to use dsflow to deploy your pipelines to cloud platfo
 
 Interested? Subscribe to our mailing list on [dsflow.io](http://dsflow.io)
 
-## Quick start / main features
+## TL;DR;
+
+If you're in a hurry, follow these steps to get a sense of how dsflow works.
 
 - install or update Docker 🐳 (`brew cask install docker`)
-- clone this repo
-- execute `source init.sh` to initialize the environment and build docker images (_it might take over 10 minutes to download all sources_ ☕️)
-- execute `dsflow` to see the list of commands
+- clone this git repo
+- execute `source init.sh` to initialize the dsflow environment and build docker images (_it might take over 10 minutes to download all sources_ ☕️)
+- execute `dsflow` to see the list of dsflow commands
 - execute `dsflow generate-job`: display the list of job templates
 - execute `dsflow generate-job TEMPLATE_NAME JOB_NAME`: generate a job based on a template
 - execute `dsflow run JOB_NAME`: runs the job in its associated container
@@ -32,7 +64,7 @@ See documentation below for detailed instructions.
 
 ## Dsflow tech stack 360
 
-These are the default technologies when using dsflow:
+Those are the defaults when adopting dsflow:
 
 - Run everything within containers  (using [Docker](https://www.docker.com/what-docker)).
 - Query and transform data with [Apache Spark 2.2](https://spark.apache.org/).
@@ -45,14 +77,39 @@ These are the default technologies when using dsflow:
 
 ## Dsflow core principles
 
-**Note**: if you're not familiar with these principles, dsflow CLI and job templates will help you adopt them.
+**Note**: if you're not familiar with the following principles,  
+dsflow CLI and dsflow Job Templates will help you adopt them.
+
+- Pipelines are made of jobs
+- Separation of compute and storage
+- Containerization
+- Daily partitions of data
+
+
+### A pipeline is a chain of jobs
+
+The concept of _pipeline_ in dsflow inherits from the concept of _DAG_ in Airflow.  A _Directed Acyclic Graph_ is a collection of all the jobs you want to run, organized in a way that reflects their relationships and dependencies.
+
+A data pipeline is also called a _workflow_.
+
+_Jobs_ are single units of data transformation. They take one or multiple inputs and produce an output. Most of the work of Data Scientists consists in creating jobs, and improving them constantly, through successive iterations.
+
+
+#### Typical dsflow pipeline
+
+![example dsflow pipeline](docs/src/example_dsflow_pipeline.png)
+
+
+#### Zoom on jobs: inputs and outputs
+
+![example job inputs and outputs](docs/src/example_job_inputs_outputs.png)
 
 
 ### Separation of compute and storage
 
 Unlike traditional databases, dsflow relies on the principle of separation of compute and storage.
 
-When you run dsflow on your computer, your resources -- **data**, jobs, notebooks, docker files -- are stored in distinct directories. It's organized in a way that simplifies deployment of your pipelines to the cloud.
+When you run dsflow on your computer, your resources -- **data**, jobs, notebooks, docker files -- are stored in distinct directories. It's organized in a way that simplifies future deployment of your pipelines to the cloud.
 
 **Data** is stored in a directory called `datastore/`:
 
@@ -65,33 +122,66 @@ When you run dsflow on your computer, your resources -- **data**, jobs, notebook
 
 - they are distinct from the data they process.
 - all jobs MUST take **input** and **output** parameters (or **source** / **sink** parameters), because the logic has to be independent from what it processes.  
-For instance, you should be able to run the same script on local data and on distant data.
+For instance, a given job should be able to process either local data or distant data.
 
-### Containers
 
-Running your data transformations (jobs) within Docker containers bring many advantages:
+### Containerization
+
+Running your jobs within Docker containers bring many advantages:
 
 - **No more library conflicts**  
 Big data tools and ML libraries keep evolving. Being able to run each script in an isolated environment is critical in order to avoid conflicts, and run both legacy script and cutting edge logic.
 - **Easily adopt newest Data Science tools**  
-New software won't impact legacy tools.
+New tools and libraries running in containers won't break legacy software.
 - **Portability**  
-Run a script on your laptop or in the cloud seamlessly. Stay independent from your cloud provider.
+Execute a script on your laptop or in the cloud seamlessly. Stay independent from your cloud provider.
 - **Scalability**  
 Each task (instance of a job) runs in its own container. It allows a better allocation of resources: running tasks in parallel, using a memory configuration optimized for each task.
 
 
 ### Daily partitions of data
 
-`ds` is not only the initials of Data Science, it's also the default name for date partitions.
+_\[important: this section is merely about conventions\]_
 
-When you store your data with daily partitions, you get immediately the following benefits:
+The acronym `ds` not only stands for Data Science, it's also the default name for date partitions following ISO format (e.g. `my_table/ds=2017-11-27/`).
 
-- versioning of your data
-- keeping daily snapshots of a dataset makes it easier to compute KPIs and monitor the evolution of the
-- you avoid overwriting data, instead you append by creating a new partition
-- it's an efficient way to store large datasets
-- it makes it easier to optimize queries of large datasets, by selecting the `ds` range that matters.
+If you store your data with daily `ds` partitions, the meaning of it will depend on whether you deal with dimensions tables (`dim`) or fact tables (`fct`).
+
+#### In case of a "dimension" table:
+
+Each `ds` partition shall contain a whole snapshot of the table.
+For instance, `users/ds=2017-11-27/` will contain a **dump** of the `users` table made on 11/27/2017.
+
+It brings the following benefits:
+
+- daily versioning of your data
+- keeping daily snapshots of a dataset makes it easier to compute KPIs and monitor the evolution of the metrics
+- you avoid overwriting data, instead you append by creating a new partition.
+- you can safely delete older snapshots of your tables once there are no longer needed.
+
+Note: as a convention, such a table is prefixed with `dim_`
+
+#### In case of a "fact" table:
+
+Each `ds` partition shall contain the facts of that day.  
+For instance, `transactions/ds=2017-11-27/` will contain the events the transactions logged on 11/27/2017.
+
+- it's a standard way to store large datasets
+- it makes it easier to optimize queries of large datasets, by selecting the `ds` range that matters
+
+Note: as a convention, such a table is prefixed with `fct_`
+
+
+#### Meaning of `ds` partitions with dsflow:
+
+By default, dsflow jobs will take a single `ds` partition as input, and output to the same `ds` partition of a target table.
+
+#### Weekly partitions? Hourly partitions?
+
+Daily `ds` partitions are the default setting of dsflow Job Templates. We follow the conventions of Airflow. See for instance the [HivePartitionSensor](https://airflow.apache.org/code.html?highlight=%20ds#airflow.operators.HivePartitionSensor).
+
+Monthly, weekly, or hourly partitions are also possible.
+
 
 
 
@@ -196,6 +286,18 @@ dsflow generate-job create_table_from_csv TABLE_NAME
 
 ```
 
+## Current limitations / known issues
+
+- python scripts --> bash scripts
+- only the `ds` partition is available
+- dsflow.load_tables() : we should specify if a table is "fct" or "dim"
+
+
+## Beta testers
+
+We put together a pool of beta testers.
+
+
 ## FAQ
 
 ### Is dsflow available on Windows?
@@ -206,3 +308,24 @@ We recommend the use of [Windows 10 linux shell](https://msdn.microsoft.com/en-u
 
 Install Docker on Windows:
 https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/
+
+
+### Why is dsflow an Open Source framework?
+
+How is dsflow going to make money?
+
+
+
+### What is the product roadmap?
+
+
+
+### How can I contribute to dsflow?
+
+
+### Any good articles about data science best practices?
+
+
+BI data with Spark SQL
+
+https://www.slideshare.net/SparkSummit/07-blagoy-kaloferov
