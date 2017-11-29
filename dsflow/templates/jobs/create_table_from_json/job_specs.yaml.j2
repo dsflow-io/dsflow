@@ -11,6 +11,3 @@ task_specs:
   source_path: "/data/raw/{{ dataset_name }}/ds={% raw %}{{ ds }}{% endraw %}"
   sink_path: "/data/tables/{{ dataset_name }}/ds={% raw %}{{ ds }}{% endraw %}"
   ds: "{% raw %}{{ ds }}{% endraw %}"
-
-# dependencies:
-#   - other-job-name

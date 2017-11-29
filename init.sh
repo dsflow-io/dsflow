@@ -6,12 +6,12 @@ if [[ $(docker version --format "{{.Server.KernelVersion}}") == *-moby ]]; then
   export DSFLOW_ROOT=$(pwd)/dsflow
 
   # install python libraries
-  echo "=== installing pyyaml..."
+  echo "=== installing poyo (yaml parser)..."
 
   if hash pip 2>/dev/null; then
-      pip install pyyaml
+      pip install poyo
   elif hash pip3 2>/dev/null; then
-      pip3 install pyyaml
+      pip3 install poyo
   else
       echo "pip not found. Please install Python."
   fi

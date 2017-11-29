@@ -1,5 +1,5 @@
 import os
-import yaml
+from poyo import parse_string
 import re
 
 from python_scripts.dsflow_core.cli_utils import validate_env
@@ -27,7 +27,7 @@ commands = sorted([re.match("dsflow-(.*).py", f).group(1)
                    if (os.path.isfile(os.path.join(DSFLOW_ROOT, f)) and "dsflow-" in f)])
 
 with open(os.path.join(DSFLOW_ROOT, "menu.yaml"), 'r') as f:
-    menu_specs = yaml.load(f)
+    menu_specs = parse_string(f.read())
 
 
 for cmd in commands:

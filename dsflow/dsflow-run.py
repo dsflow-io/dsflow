@@ -1,7 +1,7 @@
 import sys
 import os
 import subprocess
-import yaml
+from poyo import parse_string
 import json
 
 from python_scripts.dsflow_core.cli_utils import validate_env
@@ -22,7 +22,8 @@ print("job_name :", job_name)
 print("input_parameters :", input_parameters)
 
 job_specs_path = os.path.join(jobs_abs_path, job_name, "job_specs.yaml")
-job_specs_raw = yaml.load(open(job_specs_path, 'r'))
+with open(job_specs_path, 'r') as f:
+    job_specs_raw = parse_string(f.read())
 
 try:
     job_parameters = {job_specs_raw["job_parameters"][key]: input_parameters[key]
