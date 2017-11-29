@@ -1,7 +1,6 @@
 import os
 import sys
 from dsflow_core.utils import *
-from dsflow_core.models import *
 
 DSFLOW_ROOT = os.environ["DSFLOW_ROOT"]
 
