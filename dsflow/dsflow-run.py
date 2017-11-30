@@ -43,16 +43,26 @@ try:
     job_parameters = {job_specs_raw["job_parameters"][key]: input_parameters[key]
                       for key in range(len(input_parameters))}
 
-    # FIXME: this is hardcoded for now
+    # FIXME: use a jinja template instead of a python str.replace() method.
     job_specs = job_specs_raw.copy()
 
     if "task_specs" in job_specs:
-        for key in job_specs["task_specs"]:
-            job_specs["task_specs"][key] = \
-                job_specs["task_specs"][key].replace("{{ ds }}", job_parameters["ds"])
+        for parameter_name in job_specs_raw["job_parameters"]:
+            for key in job_specs["task_specs"]:
+                job_specs["task_specs"][key] = job_specs["task_specs"][key] \
+                 .replace("{{ %s }}" % parameter_name,
+                          job_parameters[parameter_name])
 
 except KeyError:
-    sys.exit("ERROR: missing parameters: %s" % job_specs_raw["job_parameters"])
+    if "job_parameters" not in job_specs_raw:
+        sys.exit("\nERROR: this job doesn't accept parameters")
+    else:
+        sys.exit("\nERROR: wrong parameters. Acceptable parameters are: %s"
+                 % job_specs_raw["job_parameters"])
+
+except IndexError:
+    sys.exit("\nERROR: wrong parameters. Acceptable parameters are: %s"
+             % job_specs_raw["job_parameters"])
 
 print("\n========== job parameters ============================")
 print(job_parameters)
