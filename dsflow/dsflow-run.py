@@ -6,10 +6,15 @@ import json
 
 from python_scripts.dsflow_core.cli_utils import validate_env
 
+# make sure environment variables are set
 validate_env()
 
 DSFLOW_ROOT = os.environ["DSFLOW_ROOT"]
 DSFLOW_WORKSPACE = os.environ["DSFLOW_WORKSPACE"]
+
+if len(sys.argv) < 2:
+    sys.exit("Usage: dsflow run JOB_NAME [JOB_PARAMETERS]"
+             "\n\nShow list of jobs: `ls jobs`")
 
 job_name = sys.argv[1]
 input_parameters = sys.argv[2:]
@@ -18,12 +23,22 @@ tmp_abs_path = os.path.join(DSFLOW_WORKSPACE, "tmp")
 datastore_abs_path = os.path.join(DSFLOW_WORKSPACE, "datastore")
 jobs_abs_path = os.path.join(DSFLOW_WORKSPACE, "jobs")
 
-print("job_name :", job_name)
-print("input_parameters :", input_parameters)
+
+print("======================================================",
+      "\nRunning job", job_name,
+      "\nwith input parameters", input_parameters)
+
 
 job_specs_path = os.path.join(jobs_abs_path, job_name, "job_specs.yaml")
-with open(job_specs_path, 'r') as f:
-    job_specs_raw = parse_string(f.read())
+
+try:
+    with open(job_specs_path, 'r') as f:
+        job_specs_raw = parse_string(f.read())
+except FileNotFoundError:
+    sys.exit("""\nERROR: Job does not exist, or job_specs.yaml is missing.
+
+Usage: dsflow run JOB_NAME [JOB_PARAMETERS]
+""")
 
 try:
     job_parameters = {job_specs_raw["job_parameters"][key]: input_parameters[key]
@@ -37,16 +52,19 @@ try:
             job_specs["task_specs"][key] = \
                 job_specs["task_specs"][key].replace("{{ ds }}", job_parameters["ds"])
 
-except:
-    raise(Exception("missing parameters:", job_specs_raw["job_parameters"]))
+except KeyError:
+    sys.exit("ERROR: missing parameters: %s" % job_specs_raw["job_parameters"])
 
-
+print("\n========== job parameters ============================")
 print(job_parameters)
+
+print("\n========== job instance specifications ===============")
 print(job_specs)
 
 script_container_path = os.path.join("/jobs", job_name, job_specs["script"])
 
 my_env = os.environ.copy()
+
 
 if job_specs["class"] == "JupyterNotebook":
     image_id = "base"  # FIXME
@@ -73,12 +91,20 @@ if job_specs["class"] == "JupyterNotebook":
         "--ExecutePreprocessor.timeout=3600",
         # "'--ExecutePreprocessor.kernel_name='"'"'python3'"'"''",
         "--output-dir",
-        "/data/job_runs/%s" % job_name,
+        "/data/job_runs/%s" % job_name,  # FIXME add partition
     ]
 
+    print("\n========== calling docker-compose ====================")
     print(" ".join(args))
 
+    print("\n========== job execution logs ========================")
     subprocess.call(args, env=my_env)
+
+    print("\n========== job output ================================")
+    print("Notebook execution logs added to datastore/job_runs/%s" % job_name)
+    print("Job output data saved to %s"
+          % job_specs["task_specs"]["sink_path"]
+          .replace("/data/", "datastore/"))
 
 elif job_specs["class"] == "CommandLineTool":
     image_id = "base"
@@ -95,10 +121,16 @@ elif job_specs["class"] == "CommandLineTool":
         job_specs["task_specs"]["sink_path"]  # FIXME input / ouput params shouldn't be hardcoded
     ]
 
+    print("\n========== calling docker-compose ====================")
     print(" ".join(args))
 
+    print("\n========== job execution logs ========================")
     subprocess.call(args, env=my_env)
 
+    print("\n========== job output ================================")
+    print("Job output data saved to %s"
+          % job_specs["task_specs"]["sink_path"]
+          .replace("/data/", "datastore/"))
 
 elif job_specs["class"] == "PlotlyDashApplication":
     image_id = "dash"
@@ -115,8 +147,14 @@ elif job_specs["class"] == "PlotlyDashApplication":
         script_container_path
     ]
 
+    print("\n========== calling docker-compose ====================")
     print(" ".join(args))
 
+    print("\n    dashboard will be accessible at http://localhost:8050/")
+    print("\n    (Press CTRL+C to quit)")
+
+
+    print("\n========== job execution logs ========================")
     subprocess.call(args, env=my_env)
 
 else:
