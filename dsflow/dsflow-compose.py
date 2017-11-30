@@ -6,6 +6,9 @@ from python_scripts.dsflow_core.cli_utils import validate_env
 
 validate_env()
 
+DSFLOW_WORKSPACE = os.environ["DSFLOW_WORKSPACE"]
+DSFLOW_ROOT = os.environ["DSFLOW_ROOT"]
+
 # Input parameters
 dsflow_service_name = sys.argv[1]
 docker_compose_file = DSFLOW_ROOT + "/docker/%s/docker-compose.yaml" % dsflow_service_name

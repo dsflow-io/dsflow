@@ -1,5 +1,5 @@
 import os
-from poyo import parse_string
+from python_scripts.poyo import parse_string
 import re
 
 from python_scripts.dsflow_core.cli_utils import validate_env
