@@ -21,11 +21,16 @@ services:
       POSTGRES_USER: hive
       POSTGRES_PASSWORD: example
       POSTGRES_DB: airflow
+      DSFLOW_ROOT: $DSFLOW_ROOT
+      DSFLOW_WORKSPACE: $DSFLOW_WORKSPACE
     volumes:
-      - $DSFLOW_WORKSPACE/airflow/:/usr/local/airflow/
+      - $DSFLOW_ROOT:$DSFLOW_ROOT:ro
+      - $DSFLOW_WORKSPACE/jobs:$DSFLOW_WORKSPACE/jobs:ro
+      - $DSFLOW_WORKSPACE/airflow/:/root/airflow/
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8081:8080"
-    command: webserver
+    # command: webserver
 
 networks:
   dsflow:
