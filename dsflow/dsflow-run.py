@@ -1,7 +1,7 @@
 import sys
 import os
 import subprocess
-from poyo import parse_string
+from python_scripts.poyo import parse_string
 import json
 
 from python_scripts.dsflow_core.cli_utils import validate_env
@@ -22,7 +22,6 @@ input_parameters = sys.argv[2:]
 tmp_abs_path = os.path.join(DSFLOW_WORKSPACE, "tmp")
 datastore_abs_path = os.path.join(DSFLOW_WORKSPACE, "datastore")
 jobs_abs_path = os.path.join(DSFLOW_WORKSPACE, "jobs")
-
 
 print("======================================================",
       "\nRunning job", job_name,
