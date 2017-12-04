@@ -1,11 +1,10 @@
 # job: {{ job_name }}
 
 1) Edit job_specs.yaml to customize job specifications
+(make sure `source_path` points to a directory in the datastore).
 
-For instance, add dependencies:
-```
-dependencies:
-  - UPSTREAM_JOB_NAME
-```
+2) Edit {{ job_name }}.ipynb (Jupyter Notebook).
+This notebook is where the create table logic will be defined.
+Start the jupyter environment in your browser with `dsflow start-jupyter`.
 
-2) Execute your flow with `dsflow run {{ job_name }}`
+3) Execute your flow with `dsflow run {{ job_name }} {{ ds }}`

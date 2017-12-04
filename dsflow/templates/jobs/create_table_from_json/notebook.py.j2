@@ -56,9 +56,14 @@ ds = task_specs["ds"]  # ds is the execution date
 
 raw_data = spark.read.text(source_path)
 
+# previewing first 10 lines of raw dataset
+raw_data.show(10):
+
 # <markdowncell>
 
 # ## \[3- process data\] convert raw data into a Spark dataframe
+
+# See all options: http://spark.apache.org/docs/latest/api/python/pyspark.sql.html#pyspark.sql.DataFrameReader.json
 
 # <codecell>
 

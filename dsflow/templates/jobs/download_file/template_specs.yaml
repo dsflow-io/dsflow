@@ -8,4 +8,4 @@ template_parameters:
     text: Please provide the source url
   - name: unzip
     type: confirm
-    text: "Do you need to unzip the file?"
+    text: "Is this a zipped (.zip) file?"

@@ -28,6 +28,11 @@ def generate(template_name, dataset_name):
         for name in list_jobs():
             show_instructions("    {}".format(name))
 
+        show_instructions("\nIf this is the first job your create, "
+                          "we suggest your start with `download_file`:"
+                          "\n\nFor instance:"
+                          "\n$ dsflow generate-job download_file my_dataset_name")
+
     else:
         """Templates are defined by template_specs.yaml and job_specs.yaml
 
