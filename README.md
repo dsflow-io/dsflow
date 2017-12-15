@@ -33,17 +33,18 @@ Interested? Subscribe to our mailing list on [dsflow.io](http://dsflow.io)
 
 ## TL;DR;
 
-- install or update Docker 🐳 (`brew cask install docker`)
-- clone this git repository (`git clone ...`) and `cd` into it.
-- execute `source init.sh` to initialize the dsflow environment and build docker images (_it might take over 10 minutes to download all sources_ ☕️)
-- execute `dsflow` to see the list of dsflow commands
-- execute `dsflow generate-job`: display the list of job templates
-- execute `dsflow generate-job TEMPLATE_NAME JOB_NAME`: generate a job based on a template
-- execute `dsflow run JOB_NAME [JOB_PARAMETERS]`: runs the job in its associated container
-- execute `dsflow start-jupyter` to open the default IDE in your browser (Jupyter Lab with pyspark) at http://localhost:8888/ (default password = `green3`)
-- execute `dsflow stop-all` to terminate all dsflow Docker containers.
+- `brew cask install docker`: install or update Docker 🐳
+- `git clone ...`: clone this git repository
+- `cd dsflow`
+- `source init.sh`: initialize the dsflow environment and build docker images (_it might take over 10 minutes to download all sources_ ☕️)
+- `dsflow`: see the list of dsflow commands
+- `dsflow generate-job`: display the list of job templates
+- `dsflow generate-job TEMPLATE_NAME JOB_NAME`: generate a job based on a template
+- `dsflow run JOB_NAME [JOB_PARAMETERS]`: runs the job in its associated container
+- `dsflow start-jupyter`: open the default IDE in your browser (Jupyter Lab with pyspark) at http://localhost:8888/ (default password = `green3`)
+- `dsflow stop-all`: terminate all dsflow Docker containers
 
-See documentation below for detailed instructions.
+See [Documentation](#documentation) below for detailed instructions.
 
 
 ## Tech stack 360
@@ -64,7 +65,7 @@ Those are the defaults when adopting dsflow:
 **Note**: if you're not familiar with the following principles,  
 dsflow CLI and dsflow Job Templates will help you adopt them.
 
-- a) Pipelines are made of jobs
+- a) A pipeline is a chain of jobs
 - b) Separation of compute and storage
 - c) Containerization
 - d) Daily partitions of data
@@ -72,7 +73,7 @@ dsflow CLI and dsflow Job Templates will help you adopt them.
 
 ### a) A pipeline is a chain of jobs
 
-The concept of _pipeline_ in dsflow inherits from the concept of _DAG_ in Airflow.  A _Directed Acyclic Graph_ is a collection of all the jobs you want to run, organized in a way that reflects their relationships and dependencies.
+The concept of _pipeline_ in dsflow inherits from the concept of _Directed Acyclic Graph (DAG)_ in Airflow.  A DAG is a collection of all the jobs you want to run, organized in a way that reflects their relationships and dependencies.
 
 A data pipeline is also called a _workflow_.
 
@@ -86,9 +87,9 @@ Once you have created jobs (with `dsflow generate-job`) you can assemble them in
 
 #### Zoom on jobs: inputs and outputs
 
-_Jobs_ are single units of data transformation. They take one or multiple **inputs** and produce an **output**. Most of the work of Data Scientists consists in creating jobs, and improving them constantly, through successive iterations.
+_Jobs_ are single units of data transformation. They take one or multiple **inputs** and produce an **output**. Most of the work of Data Scientists consists of creating jobs and improving them constantly through successive iterations.
 
-Notebook environments are well suited for data exploration and experimentation. Then it's natural to turn a notebook into a job. With dsflow, you'll be able to parametrize your notebooks by specifying input and output values. Notebooks become **first-class** jobs.
+Notebook environments are well suited for data exploration and experimentation, so it's natural to turn a notebook into a job. With dsflow, you'll be able to parametrize your notebooks by specifying input and output values. Notebooks become **first-class** jobs.
 
 
 
@@ -121,7 +122,7 @@ Running your jobs within Docker containers bring many advantages:
 
 - **No more library conflicts**  
 Big data tools and ML libraries keep evolving. Being able to run each script in an isolated environment is critical in order to avoid conflicts, and run both legacy script and cutting edge logic.
-- **Easily adopt newest Data Science tools**  
+- **Easily adopt latest Data Science tools**  
 New tools and libraries running in containers won't break legacy software.
 - **Portability**  
 Execute a script on your laptop or in the cloud seamlessly. Stay independent from your cloud provider.
@@ -135,7 +136,7 @@ _\[important: this section is merely about conventions\]_
 
 The acronym `ds` not only stands for Data Science, it's also the default name for date partitions following ISO format (e.g. `my_table/ds=2017-11-27/`).
 
-If you store your data with daily `ds` partitions, the meaning of it will depend on whether you deal with dimensions tables (`dim`) or fact tables (`fct`).
+If you store data with daily `ds` partitions, the meaning of it will depend on whether you deal with dimension tables (`dim`) or fact tables (`fct`).
 
 #### In case of a "dimension" table:
 
@@ -144,10 +145,10 @@ For instance, `users/ds=2017-11-27/` will contain a **dump** of the `users` tabl
 
 It brings the following benefits:
 
-- daily versioning of your data
+- daily versioning of data
 - keeping daily snapshots of a dataset makes it easier to compute KPIs and monitor the evolution of the metrics
 - you avoid overwriting data, instead you append by creating a new partition.
-- you can safely delete older snapshots of your tables once there are no longer needed.
+- you can safely delete older snapshots of tables once there are no longer needed.
 
 Note: as a convention, such a table is prefixed with `dim_`
 
@@ -205,7 +206,7 @@ Installation on Ubuntu: https://docs.docker.com/engine/installation/linux/docker
 
 **Frequent issues when installing dsflow on macOS**
 
-- xcode: If your it is outdated, update it with the app store, or just move it to Trash.
+- xcode: If xcode is outdated, update it with the app store, or just move it to Trash.
 - Python: dsflow CLI works with Python 2.7 and 3.3+ and only requires the `pyyaml` module in addition to core modules. Scripts with additional requirements will run in containers.
 - Docker: make sure it's running before launching dsflow.
 - Docker-compose: make sure it's up-to-date (dsflow requires support for version '3.3')
@@ -370,4 +371,4 @@ in the creation of new pipelines from existing jobs.
 
 - Dsflow CLI uses python scripts to execute `docker-compose`... that's definitely NOT a great design. In the future we'll either use 100% bash scripts or use docker Python libraries.
 - Currently, the `ds` partition is compulsory. We're not making it easy to use hourly or weekly partitions of data.
-- Fact tables vs. dimension tables: this is pure convention... dsflow doesn't yet help you deal specifically with one type or the other. It's an issue when running `dsflow.load_tables()`: we assume that all tables are fact tables, and all partitions are loaded. Don't forget to filter your table using the `ds` partition.
+- Fact tables vs. dimension tables: this is pure convention... dsflow doesn't yet help you deal specifically with one type or the other. It's an issue when running `dsflow.load_tables()`: we assume that all tables are fact tables, and all partitions are loaded. In Spark SQL, a `ds` column is automatically added: it allows you to select the data from the latest partition (using for instance `WHERE ds = '2017-12-05'`).
