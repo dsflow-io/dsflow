@@ -6,8 +6,6 @@ v-0.3.1
 
 _IMPORTANT: this is an early release of dsflow. It enables you to prototype data pipelines your own computer. Support for deployment to cloud platforms will come in a future release._
 
-⚠️⚠️⚠️ dsflow v-0.3.1 focuses on the generation of individual jobs (the elements of the pipeline), but doesn't yet generate the pipelines (as such). Pipeline management will be the focus of the dsflow v-0.4 ⚠️⚠️⚠️
-
 
 **Contents:**
 
@@ -41,7 +39,7 @@ Interested? Subscribe to our mailing list on [dsflow.io](http://dsflow.io)
 - execute `dsflow` to see the list of dsflow commands
 - execute `dsflow generate-job`: display the list of job templates
 - execute `dsflow generate-job TEMPLATE_NAME JOB_NAME`: generate a job based on a template
-- execute `dsflow run JOB_NAME`: runs the job in its associated container
+- execute `dsflow run JOB_NAME [JOB_PARAMETERS]`: runs the job in its associated container
 - execute `dsflow start-jupyter` to open the default IDE in your browser (Jupyter Lab with pyspark) at http://localhost:8888/ (default password = `green3`)
 - execute `dsflow stop-all` to terminate all dsflow Docker containers.
 
@@ -78,7 +76,7 @@ The concept of _pipeline_ in dsflow inherits from the concept of _DAG_ in Airflo
 
 A data pipeline is also called a _workflow_.
 
-**Note ⚠️**: dsflow v-0.3.1 DOES NOT provide the assistant for generation of pipelines. Yet, you can create your pipelines using Airflow. DIY.
+Once you have created jobs (with `dsflow generate-job`) you can assemble them into pipelines using Airflow. See [Documentation](#documentation) and http://github.com/dsflow-io/dsflow-sample-projects for more details.
 
 
 #### Typical dsflow pipeline
@@ -186,7 +184,13 @@ If not, execute in your terminal:
 
 ```
 xcode-select --install
+```
+
+```
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+
+```
 brew install python
 ```
 
@@ -227,31 +231,64 @@ For instance, `dsflow tree` will execute `python dsflow/dsflow-tree.py`
 dsflow
 ```
 
+
 ### Show list of job templates
 
 ```
 dsflow generate-job
 ```
 
+Without argument, this command will show the list of job templates.
+
 
 ### Generate a job from a template
 
 ```
 dsflow generate-job TEMPLATE_NAME JOB_NAME
-dsflow generate-job download_file meteoparis
-dsflow generate-job create_table_from_json meteoparis
 ```
+
+In order to build a typical end-to-end data pipeline, you may use the following commands:
+
+```
+dsflow generate-job download_file datasetname           --> 1st job will download data
+dsflow generate-job create_table_from_json datasetname  --> 2nd job will transform data into a parquet file ("table")
+dsflow generate-job create_table_from_sql tablename     --> 3rd job will deal with data transformations using Spark SQL
+dsflow generate-job plotly_dash_app tablename           --> Last job launches a dashboard, build with Plotly Dash.
+```
+
+The jobs won't run automatically when calling `dsflow generate-job ...`
 
 **Hint**: Discover open data source on https://data.opendatasoft.com/explore/?q=meteo
 
 
-### Execute a notebook:
+### Run a notebook:
 
 ```
-dsflow run JOB_NAME PARAMETERS
+dsflow run JOB_NAME [PARAMETERS]
+```
+
+For instance:
+
+```
 dsflow run download-meteoparis 2017-11-09
 dsflow run create-table-meteoparis 2017-11-09
 ```
+
+With `dsflow run`, each job will run in its own container.  
+By default, job outputs are saved to `datastore/`.
+
+
+**What happens when a notebook-based job is run by dsflow?**
+
+1. render job specifications as defined in job_specs.yaml,
+   and pass it as an environment variable.
+2. launch proper container
+3. execute nb-convert utility within the container
+4. notebook reads job specifications from environment variable
+5. notebook is rendered as html and saved to datastore
+   (goal: provide easy debugging in case something goes wrong)
+
+
 
 ### Launch notebook environment to edit your notebooks
 
@@ -259,7 +296,74 @@ dsflow run create-table-meteoparis 2017-11-09
 dsflow start-notebook
 ```
 
-Default password is `green3`
+Default password is `green3`.
+
+This command launches Jupyter Lab in a container: it's a full IDE, featuring notebooks and advanced code edition capabilities.
+
+**In depth**
+
+The main directories are mounted on this container: `jobs/`, `adhoc/`, `datastore/`.
+
+`datastore/` is also mounted as `/data/` on the container. All paths pointing to the datastore (source or sink) should refer to `/data/` to provide consistent paths across containers.
+
+(modify the default password: property `c.NotebookApp.password`
+  in `dsflow/config/jupyter-conf/jupyter_notebook_config.py`)
+
+
+
+
+### Pipeline creation and scheduling with Airflow
+
+(1) Add your airflow DAGs to `airflow/dags/`.
+
+You can run dsflow jobs using Airflow using a BashOperator.
+This Operator shall call `dsflow run JOB_NAME [PARAMETERS]`
+
+For instance:
+
+```py
+
+def dsflow_job_operator(job_name):
+    return BashOperator(
+        task_id=job_name,
+        bash_command="python $DSFLOW_ROOT/dsflow-run.py {{ params.job_name }} {{ ds }}",
+        params={'job_name': job_name},
+        dag=dag)
+
+
+t1 = dsflow_job_operator("download-meteoparis")
+t2 = dsflow_job_operator("create-table-meteoparis")
+t3 = dsflow_job_operator("create-table-meteo_agg")
+
+t1 >> t2 >> t3
+```
+
+(See a full DAG example in http://github.com/dsflow-io/dsflow-sample-projects)
+
+
+(2) Open the Airflow web UI with `dsflow start-airflow`.
+Airflow URL is http://localhost:8081
+
+(3) Use the toggle to activate your DAG. If its `start_date` is yesterday or sooner,
+then Airflow will start running the job.
+
+
+## Troubleshooting
+
+If you face an error, take a screenshot / copy the logs and create an issue in Github (or mail it to pm@dsflow.io)
+
+### Stop all containers and reset all
+
+- run `dsflow stop-all`
+- restart Docker (on Mac, in the Docker menu)
+- clear tempora
+
+
+## Next dsflow release
+
+We will add a `dsflow generate-dag` command to assist you
+in the creation of new pipelines from existing jobs.
+
 
 
 ## Current limitations / hacks
