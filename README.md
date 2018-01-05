@@ -1,17 +1,17 @@
-# dsflow [beta release]
+# dsflow's sandbox
 
 v-0.3.1
 
 ![dsflow logo](docs/src/dsflow-logo.png?raw=true "dsflow")
 
-_IMPORTANT: this is an early release of dsflow. It enables you to prototype data pipelines your own computer. Support for deployment to cloud platforms will come in a future release._
+_IMPORTANT: This framework is not meant to be deployed to production systems._
 
 
 **Contents:**
 
 <!-- TOC depthFrom:2 depthTo:2 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [What is dsflow?](#what-is-dsflow)
+- [What is dsflow sandbox?](#what-is-dsflow-sandbox)
 - [TL;DR;](#tldr)
 - [Tech stack 360](#tech-stack-360)
 - [Core principles](#core-principles)
@@ -21,15 +21,13 @@ _IMPORTANT: this is an early release of dsflow. It enables you to prototype data
 <!-- /TOC -->
 
 
-## What is dsflow?
+## What is dsflow's sandbox?
 
-We're pleased to introduce _dsflow_ — the **framework for data science**.
+This project enables you to prototype pipelines for batch data analytics. It is designed to work on your local computer, using a **command line interface** (CLI).
 
-_Dsflow_ helps you build powerful and flexible **pipelines for data analytics**.
-The current version is designed for use on your local computer, using the **command line interface**.
-Eventually you'll be able to use dsflow to deploy your pipelines to cloud platforms.
+This is a proof-of-concept product, build to illustrate the "ds philosophy"--a certain way of organizing data and transformations.
 
-Interested? Subscribe to our mailing list on [dsflow.io](http://dsflow.io)
+_Dsflow's sandbox_ is part of a broader line of products. As a company, dsflow enables data science teams to build scalable data infrastructures. Interested? Subscribe to our mailing list on [dsflow.io](http://dsflow.io)
 
 ## TL;DR;
 
@@ -55,7 +53,7 @@ Those are the defaults when adopting dsflow:
 - Query and transform data with [Apache Spark 2.2](https://spark.apache.org/).
 - Store data as [Parquet files](https://parquet.apache.org/).
 - Write code and iterate on your scripts using [Jupyter](http://jupyter.org/).
-- Orchestrate your jobs and pipelines with [Apache Airflow (incubating)](https://airflow.apache.org/) – _not implemented yet_.
+- Orchestrate your jobs and pipelines with [Apache Airflow (incubating)](https://airflow.apache.org/).
 - Build powerful dashboards with [Plotly Dash](https://plot.ly/dash/).
 - Collaborate with your team using Github (or any [version control systems](https://en.wikipedia.org/wiki/Version_control)).
 
@@ -347,6 +345,134 @@ Airflow URL is http://localhost:8081
 
 (3) Use the toggle to activate your DAG. If its `start_date` is yesterday or sooner,
 then Airflow will start running the job.
+
+
+
+## Anatomy of a dsflow project
+
+This is a description of the dsflow-sample-project.
+
+```
+
+├── adhoc                               --> adhoc notebooks
+├── airflow
+│   ├── dags                            --> dsflow pipeline specifications
+│   └── logs                                (expressed as Airflow DAGs)
+│
+├── datastore                           --> jobs outputs are stored in the datastore
+│   ├── job_runs                        --> notebook runs are rendered as html
+│   │   ├── create-table-meteo_agg
+│   │   └── create-table-meteoparis
+│   ├── raw                             --> json, csv, raw logs, etc.
+│   │   └── meteoparis
+│   │       ├── ds=2017-12-01
+│   │       ├── ds=2017-12-02
+│   │       └── ds=2017-12-03
+│   └── tables                          --> Parquet files
+│       ├── meteo_agg                       (dsflow automatically creates tables
+│       │   ├── ds=2017-12-01                based on the sub-directory names)
+│       │   ├── ds=2017-12-02
+│       │   └── ds=2017-12-03
+│       └── meteoparis
+│           ├── ds=2017-12-01
+│           ├── ds=2017-12-02
+│           └── ds=2017-12-03
+│
+├── dsflow                              --> dsflow libraries
+│   └── config                          --> config files for Spark, Jupyter, etc.
+│       ├── ipython-conf
+│       │   ├── extensions
+│       │   ├── nbextensions
+│       │   └── profile_default
+│       ├── jupyter-conf
+│       └── spark-conf
+│
+├── jobs                                --> job definitions and scripts
+│   ├── create-table-meteo_agg
+│   ├── create-table-meteoparis
+│   ├── dashboard-previsions_pluie_paris
+│   └── download-meteoparis
+│
+└── tmp                                 --> temporary data (managed by containers)
+    ├── jupyter
+    ├── pgdata
+    └── spark
+
+```
+
+
+## Anatomy of the dsflow framework
+
+The source code of dsflow (`$DSFLOW_ROOT`) is organized in a way that enables full customization: create new CLI commands, add more docker images, create additional job templates.
+
+```
+dsflow
+├── dsflow-assistant.py                 # edit the CLI scripts, or create new commands
+├── dsflow-build-images.py
+├── dsflow-compose.py
+├── ...
+│
+├── docker                              # edit or create new docker images
+│   ├── adminer
+│   │   └── docker-compose.yaml
+│   ├── airflow
+│   │   ├── Dockerfile
+│   │   └── docker-compose.yaml
+│   ├── assistant
+│   │   ├── Dockerfile
+│   │   └── docker-compose.yaml
+│   └── ...
+│
+├── python_scripts                       # these scripts are meant to be used
+│   ├── __init__.py                      # in the context of docker containers
+│   ├── dsflow_core                      # (mounted as a volume to make dev. easier)
+│   │   ├── cli_utils.py
+│   │   ├── cli_utils.pyc
+│   │   ├── helpers.py
+│   │   └── utils.py
+│   ├── dsflow-generate-job.py
+│   ├── infer_schema.py
+│   └── transform-ipynb-to-py.py
+│
+└── templates                            # edit or add new jobs templates
+    ├── README.md
+    └── jobs
+        ├── create_table_from_json
+        │   ├── README.md.j2
+        │   ├── job_specs.yaml.j2
+        │   ├── notebook.py.j2
+        │   └── template_specs.yaml
+        ├── create_table_from_sql
+        │   ├── README.md.j2
+        │   ├── job_specs.yaml.j2
+        │   ├── notebook.py.j2
+        │   └── template_specs.yaml
+        ├── download_file
+        │   ├── README.md.j2
+        │   ├── job_specs.yaml.j2
+        │   ├── script.sh.j2
+        │   └── template_specs.yaml
+        └── ...
+
+```
+
+
+Configuration of Jupyter and Spark is under `$DSFLOW_WORKSPACE/config`
+
+```
+├── config
+│   ├── ipython-conf
+│   │   └── profile_default
+│   │       └── startup
+│   │           ├── README
+│   │           └── startup.py            # customize notebook startup code
+│   ├── jupyter-conf
+│   │   ├── jupyter_notebook_config.py    # customize Jupyter
+│   └── spark-conf
+│       └── spark-defaults.conf           # set Spark defaults
+
+```
+
 
 
 ## Troubleshooting
